@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersService {
+export class CoursesService {
 
-  async findUser(): Promise<string> {
+  async findAll(): Promise<string> {
     return 'hello';
   }
 }

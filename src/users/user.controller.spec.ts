@@ -19,9 +19,9 @@ describe('CatsController', () => {
   describe('findAll', () => {
     it('should return a string \'hello\'', async () => {
       const result = 'hello';
-      jest.spyOn(usersService, 'findAll').mockImplementation(() => result);
+      jest.spyOn(usersService, 'findUser').mockImplementation(() => result);
 
-      expect(await usersController.findAll()).toBe(result);
+      expect(await usersController.findUser()).toBe(result);
     });
   });
 });

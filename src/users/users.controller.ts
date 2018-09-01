@@ -7,7 +7,7 @@ export class UsersController {
     constructor( private _usersService: UsersService ) {}
 
     @Get()
-    async findAll() {
-        return await this._usersService.findAll();
+    async findUser() {
+        return await this._usersService.findUser();
     }
 }
