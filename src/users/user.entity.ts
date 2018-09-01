@@ -1,20 +1,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Course } from '../courses/course.entity';
+import { Course } from 'courses/course.entity';
 
-@Entity('users')
+@Entity()
 export class User {
   @PrimaryGeneratedColumn() id: number;
 
-  @Column('Username') username: string;
+  @Column() username: string;
 
-  @Column('FirstName') firstName: string;
+  @Column() firstName: string;
 
-  @Column('LastName') lastName: string;
+  @Column() lastName: string;
 
-  @Column('mobile') mobile: string;
+  @Column() mobile: string;
 
-  @Column('email') email: string;
+  @Column() email: string;
 
-  @OneToMany(type => Course, (course: Course) => course.username)
+  @OneToMany(type => Course, (course: Course) => course.user)
     courses: Course[];
 }
