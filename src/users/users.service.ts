@@ -3,13 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserInfoDto } from './dto/user-info.dto';
-import { Query } from './helpers/helpers';
+import { Query, UserExistsQuery } from './helpers/helpers';
 
 @Injectable()
 export class UsersService {
 
   constructor(@InjectRepository(User)
   private readonly userRepository: Repository<User> ){}
+
+  async checkIfUserExists( username: string, password: string ): Promise<boolean> {
+    const query: UserExistsQuery = new UserExistsQuery( username, password );
+    const result: any = await this.userRepository.findOne( query );
+    return result ? true : false;
+  }
 
   async findUser( username: string ): Promise<User> {
     const query: Query = new Query(username);

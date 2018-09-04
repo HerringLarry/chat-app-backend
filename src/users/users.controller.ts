@@ -7,9 +7,9 @@ export class UsersController {
 
     constructor( private _usersService: UsersService ) {}
 
-    @Get('/:username')
-    async findUser(@Param('username') username: string ) {
-        return await this._usersService.findUser( username );
+    @Get('/:username/:password')
+    async CheckIfUserExists(@Param('username') username: string, @Param('password') password: string ) {
+        return await this._usersService.checkIfUserExists( username, password );
     }
 
     @Post()

@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const cors = require('cors');
+
+  // use it before all route definitions
+  app.use(cors({origin: 'http://localhost:4200'}));
   await app.listen(3000);
 }
 bootstrap();
