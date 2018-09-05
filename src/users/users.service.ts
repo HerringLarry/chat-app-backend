@@ -22,10 +22,10 @@ export class UsersService {
     return await this.userRepository.findOne(query);
   }
 
-  async createUser( userInfoDto: UserInfoDto ): Promise<void> {
+  async createUser( userInfoDto: UserInfoDto ): Promise<boolean> {
     const result: User = await this.findUser( userInfoDto.username );
     if ( !result ){
-      await this.userRepository.save(userInfoDto);
+      return await this.userRepository.save(userInfoDto) ? true : false;
     }
   }
 }
