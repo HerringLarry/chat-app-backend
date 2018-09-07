@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Course } from 'courses/course.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Profile } from 'profile/profile.entity';
 
 @Entity()
 export class User {
@@ -17,6 +17,6 @@ export class User {
 
   @Column() email: string;
 
-  @OneToMany(type => Course, (course: Course) => course.user)
-    courses: Course[];
+  @OneToOne(type => Profile, (profile: Profile) => profile.user)
+  profile: Profile;
 }

@@ -1,5 +1,3 @@
-import { Course } from 'courses/course.entity';
-
 export class UserInfoDto {
     username: string;
     password: string;
@@ -7,6 +5,4 @@ export class UserInfoDto {
     lastName: string;
     mobile: string;
     email: string;
-    courses: Course[];
-
 }

@@ -5,9 +5,12 @@ import { User } from 'users/user.entity';
 export class Profile {
   @PrimaryGeneratedColumn() id: number;
 
-  @Column() courseName: string;
-
   @OneToOne(type => User, user => user.profile)
   user: User;
 
+  @Column()
+  bio: string;
+
+  @Column()
+  interests: string;
 }
