@@ -24,9 +24,9 @@ import { UsersService } from 'users/users.service';
   providers: [AuthService, JwtStrategy, UsersService],
 })
 export class AuthModule {
-    public configure(consumer: MiddlewareConsumer) {
-        consumer
-          .apply(passport.authenticate('jwt', { session: false }))
-          .forRoutes(ProfileController);
-    }
+    // public configure(consumer: MiddlewareConsumer) {
+    //     consumer
+    //       .apply(passport.authenticate('jwt', { session: false }))
+    //       .forRoutes(ProfileController);
+    // }
 }

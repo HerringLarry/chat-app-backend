@@ -1,12 +1,11 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ProfileService } from 'profile/profile.service';
-import { RegistrationDto } from './dto/registration.dto';
+import { UserInfoDto } from './dto/user-info.dto';
 
 @Controller('users')
 export class UsersController {
 
-    constructor( private _usersService: UsersService, private _profileService: ProfileService ) {}
+    constructor( private _usersService: UsersService ) {}
 
     @Get('/:username/:password')
     async CheckIfUserExists(@Param('username') username: string, @Param('password') password: string ) {
@@ -14,8 +13,7 @@ export class UsersController {
     }
 
     @Post()
-    async createUserAndProfile(@Body() registrationDto: RegistrationDto) {
-        await this._usersService.createUser( registrationDto.registrationFormDto );
-        await this._profileService.createProfile( registrationDto.profileFormDto );
+    async createUser(@Body() registrationFormDto: UserInfoDto) {
+        await this._usersService.createUser( registrationFormDto );
     }
 }

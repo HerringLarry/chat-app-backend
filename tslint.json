@@ -37,7 +37,10 @@
     "no-empty": false,
     "arrow-parens": false,
     "object-literal-sort-keys": false,
+    "object-literal-shorthand": false,
     "no-unused-expression": false,
+    "only-arrow-functions": false,
+    "no-console": false,
     "max-classes-per-file": [
       false
     ],
