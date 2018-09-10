@@ -11,5 +11,6 @@ export class Profile {
   @Column()
   interests: string;
 
-  // @OneToMany( type => Piece)
+  @Column({default: 'photo'})
+  profilePhoto: string;
 }

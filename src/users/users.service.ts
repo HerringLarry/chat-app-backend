@@ -28,4 +28,13 @@ export class UsersService {
       return await this.userRepository.save(userInfoDto) ? true : false;
     }
   }
+
+  async checkIfUserCreatedProfile( username: string ): Promise<boolean> {
+    const user: User = await this.findUser( username );
+    if ( user ){
+      return user.profileCreated;
+    } else {
+      return false;
+    }
+  }
 }

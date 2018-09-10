@@ -8,12 +8,17 @@ export class UsersController {
     constructor( private _usersService: UsersService ) {}
 
     @Get('/:username/:password')
-    async CheckIfUserExists(@Param('username') username: string, @Param('password') password: string ) {
+    async checkIfUserExists(@Param('username') username: string, @Param('password') password: string ) {
         return await this._usersService.checkIfUserExists( username, password );
     }
 
     @Post()
     async createUser(@Body() registrationFormDto: UserInfoDto) {
         await this._usersService.createUser( registrationFormDto );
+    }
+
+    @Get('/:username')
+    async checkIfUserCreatedProfile(@Param('username') username ): Promise<boolean> {
+        await this._usersService.checkIfUserCreatedProfile( username );
     }
 }
