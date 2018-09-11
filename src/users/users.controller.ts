@@ -19,6 +19,6 @@ export class UsersController {
 
     @Get('/:username')
     async checkIfUserCreatedProfile(@Param('username') username ): Promise<boolean> {
-        await this._usersService.checkIfUserCreatedProfile( username );
+        return await this._usersService.checkIfUserCreatedProfile( username );
     }
 }

@@ -20,30 +20,33 @@ export class ProfileService {
                @InjectRepository(User) private readonly userRepository: Repository<User>  ) {}
 
   async createProfile( profileDto: ProfileDto): Promise<void> {
-    const profile: Profile = this.createProfileObject( profileDto );
-    await this.profileRepository.save( profile );
+    let profile: Profile = this.createProfileObject( profileDto );
+    profile = await this.profileRepository.save( profile );
     await this.updateUserAndDeleteFormerProfileIfExists( profile, profileDto.username );
   }
 
   async updateUserAndDeleteFormerProfileIfExists( profile: Profile, username: string ): Promise<void> {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne(userQuery);
-    const formerProfileId: number = user.profileId;
-    user.profile = profile;
+    const formerId: number = user.profileId;
+    user.profileId = profile.id;
     await this.userRepository.save(user);
-    await this.deleteFormerProfileIfExists( formerProfileId );
+    await this.deleteFormerProfileIfExists( formerId );
   }
 
   async deleteFormerProfileIfExists( id: number ): Promise<void> {
     const profileQuery: ProfileQuery = new ProfileQuery( id );
     const profile: Profile = await this.profileRepository.findOne( profileQuery );
-    await this.profileRepository.remove( profile );
+    if (profile) {
+      await this.profileRepository.remove( profile );
+    }
   }
 
   createProfileObject( profileDto: ProfileDto ): Profile {
     const profile: Profile = new Profile();
     profile.bio = profileDto.bio;
     profile.interests = profileDto.interests;
+    profile.username = profileDto.username;
     return profile;
   }
 

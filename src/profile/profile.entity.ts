@@ -11,6 +11,9 @@ export class Profile {
   @Column()
   interests: string;
 
+  @Column()
+  username: string;
+
   @Column({default: 'photo'})
   profilePhoto: string;
 }

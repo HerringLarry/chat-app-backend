@@ -17,13 +17,9 @@ export class User {
 
   @Column() email: string;
 
-  @Column({ nullable: true })
-  profileId: number;
-
   @Column({default: false})
   profileCreated: boolean;
 
-  @OneToOne(type => Profile)
-  @JoinColumn()
-  profile: Profile;
+  @Column({nullable: true})
+  profileId: number;
 }
