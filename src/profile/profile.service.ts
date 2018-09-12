@@ -23,8 +23,9 @@ export class ProfileService {
 
   async createProfile( profileDto: ProfileDto): Promise<void> {
     const profile: Profile = this.createProfileObject( profileDto );
+    const username: string = profileDto.username;
     await this.profileRepository.save( profile );
-    await this.updateUserAndDeleteFormerProfileIfExists( profile, profileDto.username );
+    await this.updateUserAndDeleteFormerProfileIfExists( profile, username );
   }
 
   async updateUserAndDeleteFormerProfileIfExists( profile: Profile, username: string ): Promise<void> {
@@ -65,8 +66,7 @@ export class ProfileService {
   async checkIfUserExistsAndReturnRelevantProfile( username: string ): Promise<Profile> {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne( userQuery );
-    const profileQuery: ProfileQuery = new ProfileQuery( user.profile );
-    return await this.profileRepository.findOne( profileQuery );
+    return await this.profileRepository.findOne( user.profileId );
   }
 
   async uploadProfileImage( @Req() req, username: string ): Promise<void> {
@@ -92,5 +92,29 @@ export class ProfileService {
        } else {
       return;
     }
+  }
+
+  async getProfileImage( username: string ): Promise<any> {
+    const profile: Profile = await this.checkIfUserExistsAndReturnRelevantProfile( username );
+    if ( profile ) {
+      const fileName: string = profile.profilePhoto;
+      const params = {
+        Bucket: AWS_S3_BUCKET_NAME,
+        Key: 'profile-photos/' + fileName,
+      };
+      s3.getObject( params )
+      .promise()
+      .then(
+        data => {
+          return data;
+        },
+        err => {
+          console.log(err);
+          return null;
+        });
+      } else {
+        return null;
+      }
+
   }
 }
