@@ -4,13 +4,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileDto } from './dto/profile.dto';
 import { User } from 'users/user.entity';
-import { UserQuery, ProfileQuery } from './structures/helpers';
-import * as multer from 'multer';
+import { UserQuery } from './structures/helpers';
 import * as AWS from 'aws-sdk';
-import * as multerS3 from 'multer-s3';
 import { extname } from 'path';
-import { constants } from 'fs';
-import { NumberAttributeValue } from 'aws-sdk/clients/dynamodb';
 
 const AWS_S3_BUCKET_NAME = 'artapps3bucket';
 AWS.config.loadFromPath('./aws/AwsConfig.json');

@@ -6,10 +6,3 @@ export class UserQuery {
         this.username = username;
     }
 }
-
-export class ProfileQuery {
-    id: number;
-    constructor( profile: Profile) {
-        this.id = profile.id;
-    }
-}
