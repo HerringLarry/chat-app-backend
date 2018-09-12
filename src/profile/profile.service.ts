@@ -9,6 +9,8 @@ import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import { extname } from 'path';
+import { constants } from 'fs';
+import { NumberAttributeValue } from 'aws-sdk/clients/dynamodb';
 
 const AWS_S3_BUCKET_NAME = 'artapps3bucket';
 AWS.config.loadFromPath('./aws/AwsConfig.json');
@@ -20,23 +22,24 @@ export class ProfileService {
                @InjectRepository(User) private readonly userRepository: Repository<User>  ) {}
 
   async createProfile( profileDto: ProfileDto): Promise<void> {
-    let profile: Profile = this.createProfileObject( profileDto );
-    profile = await this.profileRepository.save( profile );
+    const profile: Profile = this.createProfileObject( profileDto );
+    await this.profileRepository.save( profile );
     await this.updateUserAndDeleteFormerProfileIfExists( profile, profileDto.username );
   }
 
   async updateUserAndDeleteFormerProfileIfExists( profile: Profile, username: string ): Promise<void> {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne(userQuery);
-    const formerId: number = user.profileId;
-    user.profileId = profile.id;
+    const formerProfileId: number = user.profileId;
+    user.profile = profile;
     await this.userRepository.save(user);
-    await this.deleteFormerProfileIfExists( formerId );
+    if ( formerProfileId ) {
+      await this.deleteFormerProfileIfExists( formerProfileId );
+    }
   }
 
-  async deleteFormerProfileIfExists( id: number ): Promise<void> {
-    const profileQuery: ProfileQuery = new ProfileQuery( id );
-    const profile: Profile = await this.profileRepository.findOne( profileQuery );
+  async deleteFormerProfileIfExists( formerProfileId: number ): Promise<void> {
+    const profile: Profile = await this.profileRepository.findOne( formerProfileId );
     if (profile) {
       await this.profileRepository.remove( profile );
     }
@@ -46,7 +49,6 @@ export class ProfileService {
     const profile: Profile = new Profile();
     profile.bio = profileDto.bio;
     profile.interests = profileDto.interests;
-    profile.username = profileDto.username;
     return profile;
   }
 
@@ -63,7 +65,7 @@ export class ProfileService {
   async checkIfUserExistsAndReturnRelevantProfile( username: string ): Promise<Profile> {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne( userQuery );
-    const profileQuery: ProfileQuery = new ProfileQuery( user.profileId );
+    const profileQuery: ProfileQuery = new ProfileQuery( user.profile );
     return await this.profileRepository.findOne( profileQuery );
   }
 

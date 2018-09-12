@@ -20,6 +20,10 @@ export class User {
   @Column({default: false})
   profileCreated: boolean;
 
+  @OneToOne(type => Profile, profile => profile.id)
+  @JoinColumn({name: 'profileId', referencedColumnName: 'id'})
+  profile: Profile;
+
   @Column({nullable: true})
   profileId: number;
 }

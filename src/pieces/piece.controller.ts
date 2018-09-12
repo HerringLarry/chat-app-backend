@@ -8,9 +8,10 @@ export class PieceController {
 
     constructor( private _pieceService: PieceService ) {}
 
-    // @Post('/artPhotos/:username')
-    // @UseInterceptors(FileInterceptor('file'))
-    // async uploadArtPhoto(@Req() req, @Param('username') username): Promise<void> {
-    //     await this._profileService.uploadArtPhoto( req, username );
-    // }
+    //  @Post('/artPhotos/:username')
+    //  @UseInterceptors(FileInterceptor('file'))
+    //  async uploadArtPhoto(@Req() req, @Param('username') username): Promise<void> {
+    //      const pieceUrl = await this._pieceService.uploadArtPhoto( req, username );
+    //      await this._pieceService.createPiece()
+    //  }
 }

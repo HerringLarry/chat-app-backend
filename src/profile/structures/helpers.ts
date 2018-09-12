@@ -1,3 +1,5 @@
+import { Profile } from '../profile.entity';
+
 export class UserQuery {
     username: string;
     constructor( username: string ) {
@@ -7,7 +9,7 @@ export class UserQuery {
 
 export class ProfileQuery {
     id: number;
-    constructor( id: number ) {
-        this.id = id;
+    constructor( profile: Profile) {
+        this.id = profile.id;
     }
 }

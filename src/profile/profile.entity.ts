@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { User } from 'users/user.entity';
 
 @Entity()
@@ -11,8 +11,8 @@ export class Profile {
   @Column()
   interests: string;
 
-  @Column()
-  username: string;
+  @OneToOne(type => User, user => user.id)
+  user: User;
 
   @Column({default: 'photo'})
   profilePhoto: string;
