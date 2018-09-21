@@ -90,13 +90,7 @@ export class PieceService {
   }
 
   async getPieceImage( pieceUrl: string): Promise <any> {
-    const fileName: string = pieceUrl;
-    const params = {
-      Bucket: AWS_S3_BUCKET_NAME,
-      Key: 'piece-photos/' + fileName,
-    };
-
-    return s3.getObject(params).createReadStream;
+    
 
   }
 }
