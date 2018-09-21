@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne} from 'typeorm';
+import { Profile } from 'profile/profile.entity';
+import { User } from 'users/user.entity';
 
 @Entity()
 export class Piece {
@@ -12,4 +14,7 @@ export class Piece {
 
   @Column({nullable: true})
   piecePhotoURL: string;
+
+  @ManyToOne( type => User, user => user.id )
+  user: User;
 }

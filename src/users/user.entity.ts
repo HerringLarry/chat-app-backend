@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Profile } from 'profile/profile.entity';
+import { Piece } from 'pieces/piece.entity';
 
 @Entity()
 export class User {
@@ -26,4 +27,10 @@ export class User {
 
   @Column({nullable: true})
   profileId: number;
+
+  @OneToMany(type => Piece, piece => piece.id)
+  pieces: Piece[];
+
+  @Column({default: []})
+  pieceIds: number[];
 }
