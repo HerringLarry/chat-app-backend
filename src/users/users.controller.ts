@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserInfoDto } from './dto/user-info.dto';
 
@@ -20,5 +20,10 @@ export class UsersController {
     @Get('/:username')
     async checkIfUserCreatedProfile(@Param('username') username ): Promise<boolean> {
         return await this._usersService.checkIfUserCreatedProfile( username );
+    }
+
+    @Put('/:username')
+    async setCreateProfileFlagToTrue(@Param('username') username): Promise<void> {
+        return await this._usersService.setCreateProfileFlagToTrue( username );
     }
 }

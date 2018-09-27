@@ -37,4 +37,12 @@ export class UsersService {
       return false;
     }
   }
+
+  async setCreateProfileFlagToTrue( username: string ): Promise<void> {
+    const user: User = await this.findUser( username );
+    if ( user ){
+      user.profileCreated = true;
+      await this.userRepository.save( user );
+    }
+  }
 }

@@ -8,9 +8,17 @@ import { UserQuery } from './structures/helpers';
 import * as AWS from 'aws-sdk';
 import { extname } from 'path';
 
-const AWS_S3_BUCKET_NAME = 'artapps3bucket';
-AWS.config.loadFromPath('./aws/AwsConfig.json');
+const AWS_S3_BUCKET_NAME = 'artapps3';
+console.log(process.env.accessKeyId);
+const accessKey = process.env.accessKeyId;
+const secretAccessKey = process.env.secretAccessKey;
+const config = {
+  accessKeyId: accessKey,
+  secretAccessKey: secretAccessKey,
+};
+AWS.config.update(config);
 const s3 = new AWS.S3();
+console.log(s3);
 
 @Injectable()
 export class ProfileService {

@@ -31,6 +31,6 @@ export class User {
   @OneToMany(type => Piece, piece => piece.id)
   pieces: Piece[];
 
-  @Column({default: []})
+  @Column('int', { array: true, nullable: true })
   pieceIds: number[];
 }

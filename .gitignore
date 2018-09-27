@@ -39,6 +39,9 @@ jspm_packages/
 # TypeScript v1 declaration files
 typings/
 
+#api keys
+aws/
+
 # Optional npm cache directory
 .npm
 

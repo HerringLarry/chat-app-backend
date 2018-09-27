@@ -8,8 +8,14 @@ import { Piece } from './piece.entity';
 import { PieceQuery, UserQuery, PieceIdQuery } from './structures/helpers';
 import { PieceDto } from './dto/piece.dto';
 
-const AWS_S3_BUCKET_NAME = 'artapps3bucket';
-AWS.config.loadFromPath('./aws/AwsConfig.json');
+const AWS_S3_BUCKET_NAME = 'artapps3';
+const accessKey = process.env.accessKeyId;
+const secretAccessKey = process.env.secretAccessKey;
+const config = {
+  accessKeyId: accessKey,
+  secretAccessKey: secretAccessKey,
+};
+AWS.config.update(config);
 const s3 = new AWS.S3();
 
 @Injectable()
@@ -87,10 +93,5 @@ export class PieceService {
        } else {
       return;
     }
-  }
-
-  async getPieceImage( pieceUrl: string): Promise <any> {
-    
-
   }
 }
