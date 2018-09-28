@@ -39,7 +39,6 @@ export class ProfileController {
 
     @Get('/profileImage/:profileImagePath')
     async getProfileImage(@Param('profileImagePath') profileImagePath: string, @Res() res): Promise<any> {
-        console.log('in');
         const fileName: string = profileImagePath;
         const params = {
           Bucket: AWS_S3_BUCKET_NAME,

@@ -46,15 +46,9 @@ export class PieceService {
     }
   }
 
-  async createReference( fileName: string, pieceName: string ): Promise<boolean> {
-    const pieceQuery: PieceQuery = new PieceQuery( pieceName );
-    const piece: Piece = await this.pieceRepository.findOne( pieceQuery );
-    if ( piece ) {
-      piece.piecePhotoURL = fileName;
-      return true;
-    } else {
-      return false;
-    }
+  async createReference( fileName: string, piece: Piece ): Promise<void> {
+    piece.piecePhotoURL = fileName;
+    await this.pieceRepository.save(piece);
   }
 
   async getAllPieces( username: string ): Promise<Piece[]> {
@@ -70,7 +64,7 @@ export class PieceService {
     return pieces;
   }
 
-  async uploadPieceImage( @Req() req, pieceName: string ): Promise<void> {
+  async uploadPieceImage( @Req() req, pieceName: string, username: string ): Promise<void> {
     const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
     const fileName = `${randomName}${extname(req.file.originalname)}`;
     const params = {
@@ -78,20 +72,30 @@ export class PieceService {
       Bucket: AWS_S3_BUCKET_NAME,
       Key: 'piece-photos/' + fileName,
     };
-    const shouldUploadFile = await this.createReference( fileName, pieceName );
-    if ( shouldUploadFile ){
-      return await s3
-      .putObject(params)
-      .promise()
-      .then(
-        data => {
-          return;
-        },
-        err => {
-          return err;
-        });
-       } else {
+    if ( this.checkThatPieceExistsAndCreateReference( fileName, pieceName, username ) ) {
+    return await s3
+    .putObject(params)
+    .promise()
+    .then(
+      data => {
+        return;
+      },
+      err => {
+        return err;
+      });
+     } else {
       return;
     }
+  }
+
+  async checkThatPieceExistsAndCreateReference( fileName: string, pieceName: string, username: string ): Promise<boolean> {
+    const pieces: Piece[] = await this.getAllPieces( username );
+    const match: Piece[] = pieces.filter( piece => piece.name = pieceName);
+    if ( match.length > 0 ) {
+      await this.createReference( fileName, match[0] );
+      return true;
+    }
+
+    return false;
   }
 }
