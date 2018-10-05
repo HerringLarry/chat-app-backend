@@ -9,8 +9,8 @@ import { PieceQuery, UserQuery, PieceIdQuery } from './structures/helpers';
 import { PieceDto } from './dto/piece.dto';
 
 const AWS_S3_BUCKET_NAME = 'artapps3';
-const accessKey = process.env.accessKeyId;
-const secretAccessKey = process.env.secretAccessKey;
+const accessKey = process.env.ACCESS_KEY_ID;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const config = {
   accessKeyId: accessKey,
   secretAccessKey: secretAccessKey,
@@ -42,8 +42,14 @@ export class PieceService {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne( userQuery );
     if ( user ) {
-      user.pieces.push( piece );
+      if ( user.pieceIds ){
+        user.pieceIds.push( piece.id );
+      } else {
+        const idArray = [ piece.id ];
+        user.pieceIds = idArray;
+      }
     }
+    await this.userRepository.save(user);
   }
 
   async createReference( fileName: string, piece: Piece ): Promise<void> {
@@ -70,7 +76,7 @@ export class PieceService {
     const params = {
       Body: req.file.buffer,
       Bucket: AWS_S3_BUCKET_NAME,
-      Key: 'piece-photos/' + fileName,
+      Key: 'art-photos/' + fileName,
     };
     if ( this.checkThatPieceExistsAndCreateReference( fileName, pieceName, username ) ) {
     return await s3
@@ -81,6 +87,7 @@ export class PieceService {
         return;
       },
       err => {
+        console.log(err);
         return err;
       });
      } else {
@@ -95,6 +102,7 @@ export class PieceService {
       await this.createReference( fileName, match[0] );
       return true;
     }
+    console.log('FALSE');
 
     return false;
   }

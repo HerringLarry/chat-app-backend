@@ -18,4 +18,4 @@ import { User } from 'users/user.entity';
         PieceService,
     ],
 })
-export class ProfileModule {}
+export class PieceModule {}

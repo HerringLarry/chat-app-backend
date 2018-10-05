@@ -6,7 +6,6 @@ import { Piece } from './piece.entity';
 import { PieceDto } from './dto/piece.dto';
 
 const AWS_S3_BUCKET_NAME = 'artapps3';
-console.log(process.env.accessKeyId);
 const accessKey = process.env.accessKeyId;
 const secretAccessKey = process.env.secretAccessKey;
 const config = {
@@ -21,10 +20,10 @@ export class PieceController {
 
     constructor( private _pieceService: PieceService ) {}
 
-      @Post('/artPhotos/:pieceName')
+      @Post('/artPhotos/:username/:piecename')
       @UseInterceptors(FileInterceptor('file'))
-      async uploadArtPhoto(@Req() req, @Param('pieceName') pieceName): Promise<void> {
-          return await this._pieceService.uploadPieceImage(req, pieceName );
+      async uploadArtPhoto(@Req() req, @Param('username') username, @Param('piecename') pieceName): Promise<void> {
+          return await this._pieceService.uploadPieceImage(req, pieceName, username);
       }
 
       @Get('/:username')

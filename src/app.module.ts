@@ -1,3 +1,4 @@
+import { PieceModule } from './pieces/piece.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +10,7 @@ import { ProfileModule } from 'profile/profile.module';
 @Module({
   imports: [UsersModule,
     ProfileModule,
+    PieceModule,
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

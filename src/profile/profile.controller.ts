@@ -6,8 +6,9 @@ import { extname } from 'path';
 import { Profile } from './profile.entity';
 
 const AWS_S3_BUCKET_NAME = 'artapps3';
-const accessKey = process.env.accessKeyId;
-const secretAccessKey = process.env.secretAccessKey;
+const accessKey = process.env.ACCESS_KEY_ID;
+const secretAccessKey = process.env.SECRET_ACCESSKEY;
+console.log(accessKey);
 const config = {
   accessKeyId: accessKey,
   secretAccessKey: secretAccessKey,
@@ -44,7 +45,6 @@ export class ProfileController {
           Bucket: AWS_S3_BUCKET_NAME,
           Key: 'profile-photos/' + fileName,
         };
-
         s3.getObject(params).createReadStream().pipe(res);
     }
 }
