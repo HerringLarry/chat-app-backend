@@ -61,10 +61,12 @@ export class PieceService {
     const userQuery: UserQuery = new UserQuery( username );
     const user: User = await this.userRepository.findOne( userQuery );
     const pieces: Piece[] = [];
-    for ( const pieceId of user.pieceIds ){
-      const pieceQuery: PieceIdQuery = new PieceIdQuery( pieceId );
-      const piece: Piece = await this.pieceRepository.findOne( pieceQuery );
-      pieces.push( piece );
+    if (user.pieceIds.length > 0) {
+      for ( const pieceId of user.pieceIds ){
+        const pieceQuery: PieceIdQuery = new PieceIdQuery( pieceId );
+        const piece: Piece = await this.pieceRepository.findOne( pieceQuery );
+        pieces.push( piece );
+      }
     }
 
     return pieces;
@@ -97,13 +99,17 @@ export class PieceService {
 
   async checkThatPieceExistsAndCreateReference( fileName: string, pieceName: string, username: string ): Promise<boolean> {
     const pieces: Piece[] = await this.getAllPieces( username );
-    const match: Piece[] = pieces.filter( piece => piece.name = pieceName);
-    if ( match.length > 0 ) {
-      await this.createReference( fileName, match[0] );
-      return true;
-    }
-    console.log('FALSE');
+    if (pieces.length > 0){
+      console.log(pieces);
+      const match: Piece[] = pieces.filter( piece => piece.name = pieceName);
+      if ( match.length > 0 ) {
+        await this.createReference( fileName, match[0] );
+        return true;
+      }
+      console.log('FALSE');
 
+      return false;
+    }
     return false;
   }
 }

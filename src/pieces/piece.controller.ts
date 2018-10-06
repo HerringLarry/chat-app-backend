@@ -36,12 +36,12 @@ export class PieceController {
           return await this._pieceService.createPiece(pieceDto, username);
       }
 
-      @Get('/:photoPath')
+      @Get('/photo/:photoPath')
       async getArtPhoto(@Param('photoPath') photoPath: string, @Res() res): Promise<any>{
         const fileName: string = photoPath;
         const params = {
           Bucket: AWS_S3_BUCKET_NAME,
-          Key: 'piece-photos/' + fileName,
+          Key: 'art-photos/' + fileName,
         };
 
         s3.getObject(params).createReadStream().pipe(res);
