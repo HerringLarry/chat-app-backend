@@ -35,6 +35,7 @@ export class ProfileService {
     const user: User = await this.userRepository.findOne(userQuery);
     const formerProfileId: number = user.profileId;
     user.profile = profile;
+    user.profileCreated = true;
     await this.userRepository.save(user);
     if ( formerProfileId ) {
       await this.deleteFormerProfileIfExists( formerProfileId );

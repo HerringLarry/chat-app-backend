@@ -8,7 +8,6 @@ import { Profile } from './profile.entity';
 const AWS_S3_BUCKET_NAME = 'artapps3';
 const accessKey = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESSKEY;
-console.log(accessKey);
 const config = {
   accessKeyId: accessKey,
   secretAccessKey: secretAccessKey,
@@ -40,6 +39,7 @@ export class ProfileController {
 
     @Get('/profileImage/:profileImagePath')
     async getProfileImage(@Param('profileImagePath') profileImagePath: string, @Res() res): Promise<any> {
+        console.log(profileImagePath);
         const fileName: string = profileImagePath;
         const params = {
           Bucket: AWS_S3_BUCKET_NAME,

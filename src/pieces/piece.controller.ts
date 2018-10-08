@@ -38,12 +38,13 @@ export class PieceController {
 
       @Get('/photo/:photoPath')
       async getArtPhoto(@Param('photoPath') photoPath: string, @Res() res): Promise<any>{
-        const fileName: string = photoPath;
-        const params = {
-          Bucket: AWS_S3_BUCKET_NAME,
-          Key: 'art-photos/' + fileName,
-        };
-
-        s3.getObject(params).createReadStream().pipe(res);
+        if ( photoPath ) {
+          const fileName: string = photoPath;
+          const params = {
+            Bucket: AWS_S3_BUCKET_NAME,
+            Key: 'art-photos/' + fileName,
+          };
+          s3.getObject(params).createReadStream().pipe(res);
+        }
       }
 }

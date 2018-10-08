@@ -100,14 +100,11 @@ export class PieceService {
   async checkThatPieceExistsAndCreateReference( fileName: string, pieceName: string, username: string ): Promise<boolean> {
     const pieces: Piece[] = await this.getAllPieces( username );
     if (pieces.length > 0){
-      console.log(pieces);
-      const match: Piece[] = pieces.filter( piece => piece.name = pieceName);
+      const match: Piece[] = pieces.filter( piece => piece.name === pieceName);
       if ( match.length > 0 ) {
         await this.createReference( fileName, match[0] );
         return true;
       }
-      console.log('FALSE');
-
       return false;
     }
     return false;
