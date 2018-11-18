@@ -16,14 +16,4 @@ export class UsersController {
     async createUser(@Body() registrationFormDto: UserInfoDto) {
         await this._usersService.createUser( registrationFormDto );
     }
-
-    @Get('/:username')
-    async checkIfUserCreatedProfile(@Param('username') username ): Promise<boolean> {
-        return await this._usersService.checkIfUserCreatedProfile( username );
-    }
-
-    @Put('/:username')
-    async setCreateProfileFlagToTrue(@Param('username') username): Promise<void> {
-        return await this._usersService.setCreateProfileFlagToTrue( username );
-    }
 }
