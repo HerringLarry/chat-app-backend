@@ -11,4 +11,9 @@ export class MessageController {
     async createMessage(@Body() messageCreationDto: MessageCreationDto​​) {
         await this._messageService.createMessage( messageCreationDto );
     }
+
+    @Get('/:groupName/:threadName')
+    async getThreadsMessages(@Param('groupName') groupName: string, @Param('threadName') threadName: string) {
+        return await this._messageService.getMessages( groupName, threadName);
+    }
 }

@@ -7,7 +7,5 @@ export class Thread {
 
   @Column() name: string;
 
-  @OneToOne(type => Group​​)
-  @JoinColumn()
-    group: Group;
+  @Column() groupId: number;
 }

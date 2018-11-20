@@ -5,15 +5,20 @@ import { GroupCreationDto } from './dto/group-creation.dto';
 @Controller('groups')
 export class GroupController {
 
-    constructor( private _threadService: GroupService ) {}
+    constructor( private _groupService: GroupService ) {}
 
     @Get('/:groupName')
     async getGroup(@Param('groupName') groupName: string) {
-        return await this._threadService.getGroup( groupName );
+        return await this._groupService.getGroup( groupName );
     }
 
     @Post()
     async createGroup(@Body() groupCreationDto: GroupCreationDto) {
-        await this._threadService.createGroup( groupCreationDto );
+        return await this._groupService.createGroup( groupCreationDto );
+    }
+
+    @Get('/getUserGroups/:username')
+    async getAllGroupsAssociatedWithUser(@Param('username') username: string) {
+        return await this._groupService.findAllGroupsWithUser( username );
     }
 }

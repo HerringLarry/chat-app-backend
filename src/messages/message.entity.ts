@@ -1,23 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, Unique, CreateDateColumn} from 'typeorm';
 import { Thread } from 'threads/thread.entity';
 import { User } from 'users/user.entity';
 import { Group } from 'groups/group.entity';
 
 @Entity()
+@Unique(['id'])
 export class Message {
   @PrimaryGeneratedColumn() id: number;
 
-  @OneToOne(type => Group)
-  @JoinColumn()
-    group: Group;
+  @Column() groupId: number;
 
-  @OneToOne(type => Thread​​)
-  @JoinColumn()
-    thread: Thread​​;
+  @Column() threadId: number;
 
-  @OneToOne(type => User)
-  @JoinColumn()
-    user: User;
+  @Column() userId: number
 
   @Column() text: string;
+
+  @CreateDateColumn({type: 'timestamp'})
+  createdAt: Date;
 }

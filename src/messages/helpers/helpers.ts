@@ -4,25 +4,25 @@ import { Thread } from 'threads/thread.entity';
 import { User } from 'users/user.entity';
 
 export class MessageObject {
-    user: User;
-    group: Group;
-    thread: Thread;
+    userId: number
+    groupId: number;
+    threadId: number;
     text: string;
 
     constructor( messageCreationDto: MessageCreationDto, group: Group, thread: Thread, user: User​​ ){
         this.text = messageCreationDto.text;
-        this.group = group;
-        this.thread = thread;
-        this.user = user;
+        this.groupId = group.id;
+        this.threadId = thread.id;
+        this.userId = user.id;
     }
 }
 
 export class Query {
-    group: Group;
-    thread: Thread;
+    groupId: number;
+    threadId: number;
 
     constructor( group: Group, thread: Thread ){
-        this.group = group;
-        this.thread = thread;
+        this.groupId = group.id;
+        this.threadId = thread.id;
     }
 }

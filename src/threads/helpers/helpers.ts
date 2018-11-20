@@ -3,10 +3,10 @@ import { Group } from 'groups/group.entity';
 
 export class ThreadObject {
     name: string;
-    group: Group;
+    groupId: number;
     constructor( threadCreationDto: ThreadCreationDto, group: Group​​ ){
         this.name = threadCreationDto.name;
-        this.group = group;
+        this.groupId = group.id;
     }
 }
 
@@ -16,5 +16,12 @@ export class Query {
     constructor( name: string, group: Group ){
         this.name = name;
         this.group = group;
+    }
+}
+
+export class QueryForThreadsAssociatedWithGroup {
+    groupId: number;
+    constructor( group: Group ){
+        this.groupId = group.id;
     }
 }

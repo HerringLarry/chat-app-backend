@@ -1,4 +1,3 @@
-import { ProfileController } from '../profile/profile.controller';
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';

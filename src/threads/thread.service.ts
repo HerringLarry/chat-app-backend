@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Thread } from './thread.entity';
 import { ThreadCreationDto } from './dto/thread-creation.dto';
-import { ThreadObject, Query } from './helpers/helpers';
-import { Group } from 'groups/group.entity';
+import { ThreadObject, Query, QueryForThreadsAssociatedWithGroup } from './helpers/helpers';
+import { Group } from '../groups/group.entity';
 
 @Injectable()
 export class ThreadService {
@@ -27,6 +27,14 @@ export class ThreadService {
     const group: Group = await this._groupService.getGroup( groupName );
     const query: Query = new Query(name, group);
     const results = await this.threadRepository.findOne(query);
+
+    return results;
+  }
+
+  async getAllThreadsAssociatedWithGroup( groupName: string ): Promise<Thread[]> {
+    const group: Group = await this._groupService.getGroup( groupName );
+    const queryForThreadsAssociatedWithGroup: QueryForThreadsAssociatedWithGroup = new QueryForThreadsAssociatedWithGroup( group );
+    const results = await this.threadRepository.find( queryForThreadsAssociatedWithGroup );
 
     return results;
   }
