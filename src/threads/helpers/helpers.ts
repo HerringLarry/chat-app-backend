@@ -12,10 +12,10 @@ export class ThreadObject {
 
 export class Query {
     name: string;
-    group: Group;
+    groupId: number;
     constructor( name: string, group: Group ){
         this.name = name;
-        this.group = group;
+        this.groupId = group.id;
     }
 }
 

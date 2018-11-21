@@ -4,7 +4,7 @@ import { Thread } from 'threads/thread.entity';
 import { User } from 'users/user.entity';
 
 export class MessageObject {
-    userId: number
+    userId: number;
     groupId: number;
     threadId: number;
     text: string;

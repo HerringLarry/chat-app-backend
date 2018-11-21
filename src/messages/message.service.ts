@@ -33,7 +33,8 @@ export class MessageService {
 
   async getMessages( groupName: string, threadName: string ): Promise<Message[]> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const thread: Thread = await this._threadService.getThread( threadName, threadName );
+    const thread: Thread = await this._threadService.getThread( threadName, groupName );
+    console.log(group, thread);
     const query: Query = new Query(group, thread);
 
     const results = await this.messageRepository.find(query);
