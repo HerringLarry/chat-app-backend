@@ -26,7 +26,6 @@ export class ThreadService {
   async getThread( name: string, groupName: string ): Promise<Thread> {
     const group: Group = await this._groupService.getGroup( groupName );
     const query: Query = new Query(name, group);
-    console.log(query);
     const results = await this.threadRepository.findOne(query);
 
     return results;

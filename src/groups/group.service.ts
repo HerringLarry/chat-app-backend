@@ -19,7 +19,6 @@ export class GroupService {
     const user: User = await this._usersService.findUser( groupCreationDto.username );
     if ( user ){
       const groupObject: GroupObject = new GroupObject( groupCreationDto, user );
-      console.log(groupObject);
       const results = await this.groupRepository.save(groupObject);
       // create general thread maybe some other standard threads
 
@@ -31,11 +30,9 @@ export class GroupService {
 
   async findAllGroupsWithUser( username: string ): Promise<Group[]> {
     const user: User = await this._usersService.findUser( username );
-    console.log('in');
     const groups = await this.groupRepository.find({
       where: { userId: In([user]) },
   });
-    console.log(groups);
     return groups;
   }
 

@@ -22,6 +22,16 @@ export class UsersService {
     return await this.userRepository.findOne(query);
   }
 
+  async findUsers( usernames: string[] ): Promise<User[]> {
+    const users: User[] = [];
+    for (const username of usernames) {
+      const user: User = await this.findUser( username );
+      users.push( user );
+    }
+
+    return users;
+  }
+
   async createUser( userInfoDto: UserInfoDto ): Promise<boolean> {
     const result: User = await this.findUser( userInfoDto.username );
     if ( !result ){
