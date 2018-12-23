@@ -27,16 +27,14 @@ export class DirectMessageThreadService {
     return results ? true : false;
   }
 
-  async getThread( usernames: string[], groupName: string ): Promise<DirectMessageThread> {
-    const group: Group = await this._groupService.getGroup( groupName );
-    const users: User[] = await this._userService.findUsers( usernames );
-    const query: Query = new Query(users, group);
+  async getThread( threadId: number ): Promise<DirectMessageThread> {
+    const query: Query = new Query( threadId );
     const results = await this.dmThreadRepository.findOne(query);
 
     return results;
   }
 
-  async getAllThreadsAssociatedWithGroup( username: string, groupName: string ): Promise<DirectMessageThread[]> {
+  async getAllThreadsAssociatedWithGroupAndUser( username: string, groupName: string ): Promise<DirectMessageThread[]> {
     const group: Group = await this._groupService.getGroup( groupName );
     const user: User = await this._userService.findUser( username );
     const queryForAllDM: QueryForDMThreadsAssociatedWithGroupAndUser = new QueryForDMThreadsAssociatedWithGroupAndUser( user, group );

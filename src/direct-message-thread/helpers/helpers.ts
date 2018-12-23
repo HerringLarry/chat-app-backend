@@ -1,4 +1,4 @@
-import {  DMThreadCreationDto } from '../dto/thread-creation.dto';
+import {  DMThreadCreationDto } from '../dto/direct-message-thread-creation.dto';
 import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 
@@ -12,12 +12,12 @@ export class DMThreadObject {
 }
 
 export class Query {
-    userIds: number[];
-    groupId: number;
-    constructor( users: User[], group: Group ){
-        this.userIds = getAllUserIds( users );
-        this.groupId = group.id;
+    id: number;
+
+    constructor( threadId: number ){
+        this.id = threadId;
     }
+
 }
 
 export function getAllUserIds( users: User[] ): number[] {

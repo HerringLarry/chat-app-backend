@@ -1,16 +1,13 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, Unique, CreateDateColumn} from 'typeorm';
-import { Thread } from 'threads/thread.entity';
-import { User } from 'users/user.entity';
-import { Group } from 'groups/group.entity';
 
 @Entity()
 @Unique(['id'])
-export class Message {
+export class DirectMessage {
   @PrimaryGeneratedColumn() id: number;
 
   @Column() groupId: number;
 
-  @Column() threadId: number;
+  @Column() dmThreadId: number;
 
   @Column() username: string;
 

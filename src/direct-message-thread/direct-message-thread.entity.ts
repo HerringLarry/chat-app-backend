@@ -7,5 +7,6 @@ export class DirectMessageThread {
 
   @Column() groupId: number;
 
-  @Column() userIds: number[];
+  @Column('int', { array: true, nullable: true })
+  userIds: number[];
 }

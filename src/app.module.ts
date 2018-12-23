@@ -7,6 +7,9 @@ import { UsersModule } from 'users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'authentication/auth.module';
 import { GroupModule } from 'groups/group.module';
+import { DirectMessageModule } from 'direct-messages/direct-message.module';
+import { DirectMessageThreadModule } from 'direct-message-thread/direct-message-thread.module';
+import { MemberModule } from 'members/member.module';
 
 @Module({
   imports: [UsersModule,
@@ -14,6 +17,9 @@ import { GroupModule } from 'groups/group.module';
     GroupModule,
     ThreadModule,
     MessageModule,
+    DirectMessageModule,
+    DirectMessageThreadModule,
+    MemberModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
