@@ -4,9 +4,11 @@ import { Group } from 'groups/group.entity';
 export class ThreadObject {
     name: string;
     groupId: number;
+    isDirect: boolean;
     constructor( threadCreationDto: ThreadCreationDto, group: Group​​ ){
         this.name = threadCreationDto.name;
         this.groupId = group.id;
+        this.isDirect = false;
     }
 }
 

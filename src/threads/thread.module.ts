@@ -5,15 +5,19 @@ import { ThreadService } from './thread.service';
 import { GroupService } from 'groups/group.service';
 import { ThreadController } from './thread.controller';
 import { Thread } from './thread.entity';
+import { UsersService } from 'users/users.service';
+import { UsersModule } from 'users/users.module';
+import { MemberModule } from 'members/member.module';
+import { MemberService } from 'members/member.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Thread]), GroupModule,
+    imports: [ TypeOrmModule.forFeature([Thread]), GroupModule, UsersModule, MemberModule,
     ],
     controllers: [
         ThreadController,
     ],
     providers: [
-        ThreadService, GroupService,
+        ThreadService, GroupService, UsersService, MemberService,
     ],
 })
 export class ThreadModule {}

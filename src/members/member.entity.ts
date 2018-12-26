@@ -9,9 +9,9 @@ export class Member {
 
   @Column() groupId: number;
 
-  @Column('int', { array: true, nullable: true })
+  @Column('int', { array: true, default: '{}', nullable: false })
   threads: number[];
 
-  @Column('int', { array: true, nullable: true })
+  @Column('int', { array: true, default: '{}', nullable: false })
   directThreads: number[];
 }

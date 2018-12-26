@@ -24,17 +24,16 @@ export class DirectMessageService {
 
   async createMessage( dmMessageCreationDto: DirectMessageCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( dmMessageCreationDto.groupName );
-    const thread: DirectMessageThread = await this._directThreadService.getThread( dmMessageCreationDto.threadId );
+    const thread: DirectMessageThread = await this._directThreadService.getThreadWithName( dmMessageCreationDto.threadName, group );
     const user: User = await this._userService.findUser( dmMessageCreationDto.username );
     const messageObject: DirectMessageObject = new DirectMessageObject( dmMessageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
-
     return results ? true : false;
   }
 
-  async getMessages( groupName: string, threadId: number ): Promise<DirectMessage[]> {
+  async getMessages( groupName: string, threadName: string ): Promise<DirectMessage[]> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const dmThread: DirectMessageThread = await this._directThreadService.getThread( threadId );
+    const dmThread: DirectMessageThread = await this._directThreadService.getThreadWithName(threadName, group);
     const query: Query = new Query(group, dmThread);
 
     const results = await this.messageRepository.find(query);

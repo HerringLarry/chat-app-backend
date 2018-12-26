@@ -12,9 +12,10 @@ export class ThreadController {
         return await this._threadService.getThread( threadName, groupName );
     }
 
-    @Get('/:groupName')
-    async getAllThreadsAssociatedWithGroup(@Param('groupName') groupName: string) {
-        return await this._threadService.getAllThreadsAssociatedWithGroup(groupName);
+    @Get('/getThreads/:groupName/:username')
+    async getAllThreadsAssociatedWithGroup(@Param('groupName') groupName: string, @Param('username') username: string) {
+
+        return await this._threadService.getAllThreadsAssociatedWithMember(groupName, username);
     }
 
     @Post()

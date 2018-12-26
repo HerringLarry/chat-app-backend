@@ -1,6 +1,6 @@
 export class DirectMessageCreationDto{
     username: string;
     groupName: string;
-    threadId: number;
+    threadName: string;
     text: string;
 }

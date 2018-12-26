@@ -4,6 +4,8 @@ import { Group } from 'groups/group.entity';
 export class MemberObject {
     userId: number;
     groupId: number;
+    threads: number[] = [];
+    directThreads: number[] = [];
     constructor( group: Group, user: User){
        this.userId = user.id;
        this.groupId = group.id;
@@ -21,5 +23,14 @@ export class QueryForUsersGroups{
     user: User;
     constructor( user: User ){
         this.user = user;
+    }
+}
+
+export class QueryForSpecificMember{
+    userId: number;
+    groupId: number;
+    constructor( user: User, group: Group ){
+        this.userId = user.id;
+        this.groupId = group.id;
     }
 }

@@ -8,4 +8,6 @@ export class Thread {
   @Column() name: string;
 
   @Column() groupId: number;
+
+  @Column() isDirect: boolean;
 }

@@ -3,10 +3,10 @@ import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 
 export class DMThreadObject {
-    userIds: number[];
+    name: string;
     groupId: number;
     constructor( users: User[], group: Group ){
-        this.userIds = getAllUserIds( users );
+        this.name = getAllUserIds( users );
         this.groupId = group.id;
     }
 }
@@ -20,13 +20,40 @@ export class Query {
 
 }
 
-export function getAllUserIds( users: User[] ): number[] {
-    const userIds: number[] = [];
+export class QueryForThreadWithName{
+    name: string;
+    groupName: string;
+    constructor( users: User[], group: Group ){
+        this.name = getAllUserIds(users);
+        this.groupName = group.name;
+    }
+}
+
+export class QueryForThreadWithNameTwo{
+    name: string;
+    groupId: number;
+
+    constructor( name: string, group: Group) {
+        this.name = name;
+        this.groupId = group.id;
+    }
+}
+
+export function getAllUserIds( users: User[] ): string {
+    let name: string;
     users.forEach( user => {
-        this.userIds.push(user.id);
+        name = appendToName( name, user );
     });
 
-    return userIds;
+    return name;
+}
+
+export function appendToName( name: string, user: User ){
+    if ( name === '' ){
+        return user.username;
+    } else {
+        return name + '/' + user.username;
+    }
 }
 
 export class QueryForDMThreadsAssociatedWithGroupAndUser {
