@@ -5,7 +5,7 @@ import { Group } from 'groups/group.entity';
 export class DirectMessageThread {
   @PrimaryGeneratedColumn() id: number;
 
-  @Column() name: string;
+  @Column() userIds: number[];
 
   @Column() groupId: number;
 

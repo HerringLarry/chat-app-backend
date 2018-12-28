@@ -5,8 +5,8 @@ import { User } from 'users/user.entity';
 export class DMThreadObject {
     name: string;
     groupId: number;
-    constructor( users: User[], group: Group ){
-        this.name = getAllUserIds( users );
+    constructor( usernames: string[], group: Group ){
+        this.name = getAllUserIds( usernames );
         this.groupId = group.id;
     }
 }
@@ -23,8 +23,8 @@ export class Query {
 export class QueryForThreadWithName{
     name: string;
     groupName: string;
-    constructor( users: User[], group: Group ){
-        this.name = getAllUserIds(users);
+    constructor( usernames: string[], group: Group ){
+        this.name =  getAllUserIds(usernames);
         this.groupName = group.name;
     }
 }
@@ -39,20 +39,20 @@ export class QueryForThreadWithNameTwo{
     }
 }
 
-export function getAllUserIds( users: User[] ): string {
-    let name: string;
-    users.forEach( user => {
-        name = appendToName( name, user );
+export function getAllUserIds( usernames: string[] ): string {
+    let name: string = '';
+    usernames.forEach( username => {
+        name = appendToName( name, username );
     });
 
     return name;
 }
 
-export function appendToName( name: string, user: User ){
+export function appendToName( name: string, username: string ){
     if ( name === '' ){
-        return user.username;
+        return username;
     } else {
-        return name + '/' + user.username;
+        return name + '|' + username;
     }
 }
 

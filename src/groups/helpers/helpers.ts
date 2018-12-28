@@ -1,5 +1,6 @@
 import { GroupCreationDto } from './../dto/group-creation.dto';
 import { User } from 'users/user.entity';
+import { Group } from 'groups/group.entity';
 export class GroupObject {
     name: string;
     userIds: number[] = [];

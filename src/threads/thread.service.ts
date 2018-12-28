@@ -43,7 +43,7 @@ export class ThreadService {
     const group: Group = await this._groupService.getGroup( groupName );
     const user: User = await this._userService.findUser( username );
     const member: Member = await this._memberService.findMember(user, group);
-    if ( member.threads.length > 0){
+    if ( member !== undefined && member.threads.length > 0){
       const results = await this.threadRepository.find({
         where: {id: In(member.threads)},
       });

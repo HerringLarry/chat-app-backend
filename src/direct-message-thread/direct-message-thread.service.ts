@@ -24,12 +24,15 @@ export class DirectMessageThreadService {
   async createDirectMessageThread( dmThreadCreationDto: DMThreadCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( dmThreadCreationDto.groupName );
     const users: User[] = await this._userService.findUsers( dmThreadCreationDto.userNames );
-    const threadObject: DMThreadObject = new DMThreadObject( users, group );
-    const results = await this.dmThreadRepository.save(threadObject);
-    const queryForThreadWithName: QueryForThreadWithName = new QueryForThreadWithName(users, group);
-    const directThread = await this.dmThreadRepository.findOne(queryForThreadWithName);
-    this._memberService.addDirectThreadToMultipleMembers(users, group, directThread);
-
+    const threadObject: DMThreadObject = new DMThreadObject( dmThreadCreationDto.userNames, group );
+    const queryForThreadWithName: QueryForThreadWithName = new QueryForThreadWithName(dmThreadCreationDto.userNames, group);
+    const directThreadCheck = await this.dmThreadRepository.findOne(queryForThreadWithName);
+    let results = null;
+    if ( directThreadCheck === undefined){
+      results = await this.dmThreadRepository.save(threadObject);
+      const directThread = await this.dmThreadRepository.findOne(queryForThreadWithName);
+      await this._memberService.addDirectThreadToMultipleMembers(users, group, directThread);
+    }
     return results ? true : false;
   }
 
@@ -50,7 +53,7 @@ export class DirectMessageThreadService {
     const group: Group = await this._groupService.getGroup( groupName );
     const user: User = await this._userService.findUser( username );
     const member: Member = await this._memberService.findMember( user, group );
-    if ( member.directThreads.length > 0 ) {
+    if ( member !== undefined && member.directThreads.length > 0 ) {
       const results = await this.dmThreadRepository.find({
         where: {id: In(member.directThreads)},
       });

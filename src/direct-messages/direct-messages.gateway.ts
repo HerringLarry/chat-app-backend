@@ -50,7 +50,7 @@ import { MessageService } from 'messages/message.service';
         const result = data;
         await this.directMessagesService.createMessage(result);
         const messages = await this.directMessagesService.getMessages(data.groupName, data.threadName);
-        client.broadcast.to( this.getName( data.threadName + '/' + data.groupName ) ).emit(event, messages);
+        client.broadcast.to( data.threadName + '/' + data.groupName ).emit(event, messages);
         return Observable.create(observer =>
           observer.next({ event, data: messages }),
       );
@@ -58,12 +58,13 @@ import { MessageService } from 'messages/message.service';
 
     @SubscribeMessage('join')
     async onRoomJoin(client, data: any): Promise<any> {
-      client.join(this.getName(data) );
+      client.join(data);
       const event: string = 'message';
       const threadName: string = String(data.split('/')[0]);
-      const groupName: string = data.split('/')[1];
+      const groupName: string = String(data.split('/')[1]);
       const messages = await this.directMessagesService.getMessages(groupName, threadName);
       // Send last messages to the connected user
+
       client.emit(event, messages);
 
       return Observable.create(observer =>
@@ -72,12 +73,8 @@ import { MessageService } from 'messages/message.service';
     }
 
     @SubscribeMessage('leave')
-    asynconRoomLeave(client, data: any): void {
-      client.leave(this.getName(data));
-    }
-
-    getName( name: string ): string {
-      return 'dm/' + name;
+    async onRoomLeave(client, data: any) {
+      client.leave(data);
     }
 
 }

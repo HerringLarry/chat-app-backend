@@ -21,4 +21,9 @@ export class GroupController {
     async getAllGroupsAssociatedWithUser(@Param('username') username: string) {
         return await this._groupService.findAllGroupsWithUser( username );
     }
+
+    @Get('/:username/:group')
+    async getUsersInGroup(@Param('username') username: string, @Param('group') groupName: string){
+        return await this._groupService.getAllUsersInGroup( username, groupName);
+    }
 }

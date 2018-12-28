@@ -51,4 +51,12 @@ export class GroupService {
 
     return results;
   }
+
+  async getAllUsersInGroup( username: string, groupName: string ): Promise<User[]>{
+    const group: Group = await this.getGroup(groupName);
+    const members: Member[] = await this._memberService.findAllMembersInGroup( group );
+    const users: User[] = await this._usersService.findUsersByMembership( members );
+
+    return users;
+  }
 }

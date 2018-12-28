@@ -14,7 +14,6 @@ export class ThreadController {
 
     @Get('/getThreads/:groupName/:username')
     async getAllThreadsAssociatedWithGroup(@Param('groupName') groupName: string, @Param('username') username: string) {
-
         return await this._threadService.getAllThreadsAssociatedWithMember(groupName, username);
     }
 

@@ -34,3 +34,10 @@ export class QueryForSpecificMember{
         this.groupId = group.id;
     }
 }
+
+export class QueryForAllUsersInGroup{
+    groupId: number;
+    constructor( group: Group ){
+        this.groupId = group.id;
+    }
+}

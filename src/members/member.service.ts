@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Any } from 'typeorm';
 import { Member } from './member.entity';
 import { MemberCreationDto } from './dto/group-creation.dto';
-import { MemberObject, Query, QueryForUsersGroups, QueryForSpecificMember } from './helpers/helpers';
+import { MemberObject, Query, QueryForUsersGroups, QueryForSpecificMember, QueryForAllUsersInGroup } from './helpers/helpers';
 import { User } from 'users/user.entity';
 import { Group } from 'groups/group.entity';
 import { Thread } from 'threads/thread.entity';
@@ -52,5 +52,10 @@ export class MemberService {
   async findMember( user: User, group: Group ): Promise<Member>{
     const queryForSpecificMember: QueryForSpecificMember = new QueryForSpecificMember(user, group);
     return await this.memberRepository.findOne(queryForSpecificMember);
+  }
+
+  async findAllMembersInGroup( group: Group ): Promise<Member[]>{
+    const queryForAllUsersInGroup: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( group );
+    return await this.memberRepository.find(queryForAllUsersInGroup);
   }
 }
