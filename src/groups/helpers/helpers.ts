@@ -23,3 +23,11 @@ export class QueryForUsersGroups{
         this.user = user;
     }
 }
+
+export class QueryForGroupById{
+    id: number;
+
+    constructor( id: number ){
+        this.id = id;
+    }
+}

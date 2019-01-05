@@ -23,7 +23,7 @@ export class MessageService {
 
   async createMessage( messageCreationDto: MessageCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( messageCreationDto.groupName );
-    const thread: Thread = await this._threadService.getThread( messageCreationDto.threadName, messageCreationDto.groupName );
+    const thread: Thread = await this._threadService.getThread( messageCreationDto.threadId, messageCreationDto.groupName );
     const user: User = await this._userService.findUser( messageCreationDto.username );
     const messageObject: MessageObject = new MessageObject( messageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
@@ -31,9 +31,9 @@ export class MessageService {
     return results ? true : false;
   }
 
-  async getMessages( groupName: string, threadName: string ): Promise<Message[]> {
+  async getMessages( groupName: string, threadId: number ): Promise<Message[]> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const thread: Thread = await this._threadService.getThread( threadName, groupName );
+    const thread: Thread = await this._threadService.getThread( threadId, groupName );
     const query: Query = new Query(group, thread);
 
     const results = await this.messageRepository.find(query);

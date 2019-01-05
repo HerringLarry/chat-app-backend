@@ -3,6 +3,7 @@ import { Group } from 'groups/group.entity';
 import { Thread } from 'threads/thread.entity';
 import { User } from 'users/user.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
+import { DMThreadWithUsernames } from 'direct-message-thread/helpers/helpers';
 
 export class DirectMessageObject {
     userId: number;
@@ -11,7 +12,7 @@ export class DirectMessageObject {
     text: string;
     username: string;
 
-    constructor( messageCreationDto: DirectMessageCreationDto, group: Group, dmThread: DirectMessageThread, user: User ){
+    constructor( messageCreationDto: DirectMessageCreationDto, group: Group, dmThread: DMThreadWithUsernames, user: User ){
         this.text = messageCreationDto.text;
         this.groupId = group.id;
         this.dmThreadId = dmThread.id;
@@ -24,7 +25,7 @@ export class Query {
     groupId: number;
     dmThreadId: number;
 
-    constructor( group: Group, dmThread: DirectMessageThread ){
+    constructor( group: Group, dmThread: DMThreadWithUsernames){
         this.groupId = group.id;
         this.dmThreadId = dmThread.id;
     }

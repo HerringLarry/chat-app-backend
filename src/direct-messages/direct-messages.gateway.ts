@@ -49,7 +49,7 @@ import { MessageService } from 'messages/message.service';
         const event: string = 'message';
         const result = data;
         await this.directMessagesService.createMessage(result);
-        const messages = await this.directMessagesService.getMessages(data.groupName, data.threadName);
+        const messages = await this.directMessagesService.getMessages(data.groupName, data.Id);
         client.broadcast.to( data.threadName + '/' + data.groupName ).emit(event, messages);
         return Observable.create(observer =>
           observer.next({ event, data: messages }),
@@ -60,9 +60,9 @@ import { MessageService } from 'messages/message.service';
     async onRoomJoin(client, data: any): Promise<any> {
       client.join(data);
       const event: string = 'message';
-      const threadName: string = String(data.split('/')[0]);
+      const threadId: number = Number(data.split('/')[0]);
       const groupName: string = String(data.split('/')[1]);
-      const messages = await this.directMessagesService.getMessages(groupName, threadName);
+      const messages = await this.directMessagesService.getMessages(groupName, threadId);
       // Send last messages to the connected user
 
       client.emit(event, messages);

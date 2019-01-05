@@ -13,10 +13,10 @@ export class ThreadObject {
 }
 
 export class Query {
-    name: string;
+    id: number;
     groupId: number;
-    constructor( name: string, group: Group ){
-        this.name = name;
+    constructor( id: number, group: Group ){
+        this.id = id;
         this.groupId = group.id;
     }
 }
@@ -25,5 +25,14 @@ export class QueryForThreadsAssociatedWithGroup {
     groupId: number;
     constructor( group: Group ){
         this.groupId = group.id;
+    }
+}
+
+export class QueryWithName {
+    name: string;
+    groupId: number;
+    constructor( name: string, groupId: number ){
+        this.name = name;
+        this.groupId = groupId;
     }
 }

@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Any } from 'typeorm';
 import { Member } from './member.entity';
 import { MemberCreationDto } from './dto/group-creation.dto';
-import { MemberObject, Query, QueryForUsersGroups, QueryForSpecificMember, QueryForAllUsersInGroup } from './helpers/helpers';
+import { MemberObject, Query, QueryForUsersGroups, QueryForSpecificMember, QueryForAllUsersInGroup, MemberWithAllThreadIds } from './helpers/helpers';
 import { User } from 'users/user.entity';
 import { Group } from 'groups/group.entity';
 import { Thread } from 'threads/thread.entity';
@@ -22,6 +22,11 @@ export class MemberService {
   async createMember( user: User, group: Group ) {
     const memberObject: MemberObject = new MemberObject( group, user );
     return await this.memberRepository.save( memberObject );
+  }
+
+  async createMemberWithAllThreads( user: User, group: Group, threads: Thread[] ){
+    const memberWithAllThreads: MemberWithAllThreadIds = new MemberWithAllThreadIds( user, group, threads );
+    return await this.memberRepository.save(memberWithAllThreads);
   }
 
   async findAllMemberships( username: string ): Promise<Member[]> {
@@ -57,5 +62,13 @@ export class MemberService {
   async findAllMembersInGroup( group: Group ): Promise<Member[]>{
     const queryForAllUsersInGroup: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( group );
     return await this.memberRepository.find(queryForAllUsersInGroup);
+  }
+
+  async addThreadToAllMembers( group: Group, thread: Thread ): Promise<void> {
+    const members: Member[] = await this.findAllMembersInGroup( group );
+    for ( const member of members ) {
+      member.threads.push(thread.id);
+      await this.memberRepository.save(member);
+    }
   }
 }

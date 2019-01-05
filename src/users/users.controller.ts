@@ -16,4 +16,9 @@ export class UsersController {
     async createUser(@Body() registrationFormDto: UserInfoDto) {
         await this._usersService.createUser( registrationFormDto );
     }
+
+    @Get('/getAllUsers')
+    async getAllUsers() {
+        return await this._usersService.getAllUsers();
+    }
 }

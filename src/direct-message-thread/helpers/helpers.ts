@@ -3,11 +3,22 @@ import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 
 export class DMThreadObject {
-    name: string;
+    userIds: number[];
     groupId: number;
-    constructor( usernames: string[], group: Group ){
-        this.name = getAllUserIds( usernames );
+    constructor( users: User[], group: Group ){
+        this.userIds = getAllUserIds( users );
         this.groupId = group.id;
+    }
+}
+
+export class DMThreadWithUsernames {
+    id: number;
+    usernames: string[];
+    groupId: number;
+    constructor( users: User[], groupId: number, id: number){
+        this.usernames = getAllUsernames( users );
+        this.groupId = groupId;
+        this.id = id;
     }
 }
 
@@ -20,40 +31,41 @@ export class Query {
 
 }
 
-export class QueryForThreadWithName{
-    name: string;
-    groupName: string;
-    constructor( usernames: string[], group: Group ){
-        this.name =  getAllUserIds(usernames);
-        this.groupName = group.name;
-    }
-}
-
-export class QueryForThreadWithNameTwo{
-    name: string;
+export class QueryForThreadWithUsers{
+    userIds: number[];
     groupId: number;
-
-    constructor( name: string, group: Group) {
-        this.name = name;
+    constructor( users: User[], group: Group ){
+        this.userIds =  getAllUserIds(users);
         this.groupId = group.id;
     }
 }
 
-export function getAllUserIds( usernames: string[] ): string {
-    let name: string = '';
-    usernames.forEach( username => {
-        name = appendToName( name, username );
-    });
+export class QueryForThreadWithId{
+    threadId: number;
+    groupId: number;
 
-    return name;
+    constructor( threadId: number, group: Group) {
+        this.threadId = threadId;
+        this.groupId = group.id;
+    }
 }
 
-export function appendToName( name: string, username: string ){
-    if ( name === '' ){
-        return username;
-    } else {
-        return name + '|' + username;
-    }
+export function getAllUserIds( users: User[] ): number[] {
+    const ids = [];
+    users.forEach( user => {
+        ids.push(user.id);
+    });
+
+    return ids;
+}
+
+export function getAllUsernames( users: User[] ): string[] {
+    const usernames = [];
+    users.forEach( user => {
+        usernames.push( user.username );
+    });
+
+    return usernames;
 }
 
 export class QueryForDMThreadsAssociatedWithGroupAndUser {

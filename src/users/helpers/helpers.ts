@@ -1,4 +1,5 @@
 import { Member } from "members/member.entity";
+import { User } from "users/user.entity";
 
 export class Query {
     username: string;
@@ -22,5 +23,13 @@ export class QueryForUsersFromMembers{
         for ( const member of members) {
             this.userIds.push( member.userId );
         }
+    }
+}
+
+export class QueryById {
+    id: number;
+
+    constructor( userId: number ){
+        this.id = userId;
     }
 }

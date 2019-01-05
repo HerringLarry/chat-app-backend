@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Any } from 'typeorm';
 import { Group } from './group.entity';
 import { GroupCreationDto } from './dto/group-creation.dto';
-import { GroupObject, Query, QueryForUsersGroups } from './helpers/helpers';
+import { GroupObject, Query, QueryForUsersGroups, QueryForGroupById } from './helpers/helpers';
 import { User } from 'users/user.entity';
 import { MemberService } from 'members/member.service';
 import { Member } from 'members/member.entity';
@@ -58,5 +58,11 @@ export class GroupService {
     const users: User[] = await this._usersService.findUsersByMembership( members );
 
     return users;
+  }
+
+  async getGroupById( groupId: number ): Promise<Group> {
+    const query: QueryForGroupById = new QueryForGroupById( groupId );
+
+    return await this.groupRepository.findOne( query );
   }
 }

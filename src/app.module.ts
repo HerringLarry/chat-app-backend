@@ -10,6 +10,7 @@ import { GroupModule } from 'groups/group.module';
 import { DirectMessageModule } from 'direct-messages/direct-message.module';
 import { DirectMessageThreadModule } from 'direct-message-thread/direct-message-thread.module';
 import { MemberModule } from 'members/member.module';
+import { InvitesModule } from 'invites/invites.module';
 
 @Module({
   imports: [UsersModule,
@@ -20,6 +21,7 @@ import { MemberModule } from 'members/member.module';
     DirectMessageModule,
     DirectMessageThreadModule,
     MemberModule,
+    InvitesModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

@@ -51,8 +51,8 @@ import { MessageService } from './message.service';
         const result = data;
 
         await this.messagesService.createMessage(result);
-        const messages = await this.messagesService.getMessages(data.groupName, data.threadName);
-        client.broadcast.to(data.threadName + '/' + data.groupName).emit(event, messages);
+        const messages = await this.messagesService.getMessages(data.groupName, data.threadId);
+        client.broadcast.to(data.threadId + '/' + data.groupName).emit(event, messages);
 
         return Observable.create(observer =>
           observer.next({ event, data: messages }),
@@ -63,9 +63,9 @@ import { MessageService } from './message.service';
     async onRoomJoin(client, data: any): Promise<any> {
       client.join(data);
       const event: string = 'message';
-      const threadName: string = data.split('/')[0];
+      const threadId: number = data.split('/')[0];
       const groupName: string = data.split('/')[1];
-      const messages = await this.messagesService.getMessages(groupName, threadName);
+      const messages = await this.messagesService.getMessages(groupName, threadId);
       // Send last messages to the connected user
       client.emit(event, messages);
 

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Thread } from './thread.entity';
 import { ThreadCreationDto } from './dto/thread-creation.dto';
-import { ThreadObject, Query, QueryForThreadsAssociatedWithGroup } from './helpers/helpers';
+import { ThreadObject, Query, QueryForThreadsAssociatedWithGroup, QueryWithName } from './helpers/helpers';
 import { Group } from '../groups/group.entity';
 import { MemberService } from 'members/member.service';
 import { UsersService } from 'users/users.service';
@@ -25,15 +25,15 @@ export class ThreadService {
     const group: Group = await this._groupService.getGroup( threadCreationDto.groupName );
     const threadObject: ThreadObject = new ThreadObject( threadCreationDto, group );
     await this.threadRepository.save(threadObject);
-    const query: Query = new Query(threadObject.name, group);
+    const query: QueryWithName = new QueryWithName(threadObject.name, group.id);
     const thread: Thread = await this.threadRepository.findOne(query);
     const user: User = await this._userService.findUser(threadCreationDto.username);
-    await this._memberService.addThreadToMember(user, group, thread );
+    await this._memberService.addThreadToAllMembers(group, thread );
   }
 
-  async getThread( name: string, groupName: string ): Promise<Thread> {
+  async getThread( id: number , groupName: string ): Promise<Thread> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const query: Query = new Query(name, group);
+    const query: Query = new Query(id, group);
     const results = await this.threadRepository.findOne(query);
 
     return results;
@@ -53,5 +53,11 @@ export class ThreadService {
 
       return [];
     }
+  }
+
+  async getAllThreadsAssociatedWithGroup( group: Group ): Promise<Thread[]> {
+    const query: QueryForThreadsAssociatedWithGroup = new QueryForThreadsAssociatedWithGroup( group );
+
+    return await this.threadRepository.find( query );
   }
 }
