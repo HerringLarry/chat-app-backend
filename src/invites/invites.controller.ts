@@ -3,6 +3,7 @@ import { InvitesService } from './invites.service';
 import { Invite } from './invites.entity';
 import { InviteDto } from './dto/invites.dto';
 import { ResponseDto } from './dto/response.dto';
+import { ModifiedInviteDto } from './helpers/helpers';
 
 @Controller('invites')
 export class InvitesController {
@@ -15,12 +16,17 @@ export class InvitesController {
     }
 
     @Post('/invite')
-    async createInvites(@Body() inviteDto: InviteDto ): Promise<void> {
-        await this._invitesService.createMultipleInvites( inviteDto );
+    async createInvite(@Body() inviteDto: ModifiedInviteDto ): Promise<void> {
+        await this._invitesService.createInvite( inviteDto );
     }
 
     @Post('/respond')
     async respondToInvite( @Body() responseDto: ResponseDto ): Promise<void> {
         await this._invitesService.respondToInvite( responseDto );
+    }
+
+    @Get('/:groupName/:username')
+    async getListOfUsersThatAreNeitherMembersNorAlreadyInvited( @Param('groupName') groupName: string, @Param('username') username: string) {
+        return await this._invitesService.getListOfRelevantUsers( groupName, username );
     }
 }

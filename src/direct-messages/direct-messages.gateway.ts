@@ -49,8 +49,8 @@ import { MessageService } from 'messages/message.service';
         const event: string = 'message';
         const result = data;
         await this.directMessagesService.createMessage(result);
-        const messages = await this.directMessagesService.getMessages(data.groupName, data.Id);
-        client.broadcast.to( data.threadName + '/' + data.groupName ).emit(event, messages);
+        const messages = await this.directMessagesService.getMessages(data.groupName, data.threadId);
+        client.broadcast.to( data.threadId + '/' + data.groupName ).emit(event, messages);
         return Observable.create(observer =>
           observer.next({ event, data: messages }),
       );

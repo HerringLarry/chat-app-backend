@@ -54,6 +54,12 @@ export class MemberService {
     await this.memberRepository.save(member);
   }
 
+  async checkIfInGroup( user: User, group: Group ): Promise<boolean> {
+    const member: Member = await this.findMember( user, group );
+
+    return member !== undefined;
+  }
+
   async findMember( user: User, group: Group ): Promise<Member>{
     const queryForSpecificMember: QueryForSpecificMember = new QueryForSpecificMember(user, group);
     return await this.memberRepository.findOne(queryForSpecificMember);

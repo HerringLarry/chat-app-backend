@@ -41,11 +41,11 @@ export class QueryForThreadWithUsers{
 }
 
 export class QueryForThreadWithId{
-    threadId: number;
+    id: number;
     groupId: number;
 
     constructor( threadId: number, group: Group) {
-        this.threadId = threadId;
+        this.id = threadId;
         this.groupId = group.id;
     }
 }

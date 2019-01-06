@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import {  Invite } from './invites.entity';
-import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite } from './helpers/helpers';
+import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite, QueryForInviteByUserAndGroupId } from './helpers/helpers';
 import { Member } from 'members/member.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
 import { UsersService } from 'users/users.service';
@@ -92,6 +92,41 @@ export class InvitesService {
   async findInviteById( id: number ): Promise<Invite> {
     const query: QueryForInviteById = new QueryForInviteById( id );
     return await this.inviteRepository.findOne(query);
+  }
+
+  async getListOfRelevantUsers( groupName: string, username: string ): Promise<User[]> {
+    let users: User[] = await this._usersService.getAllUsers();
+    const usersIterable: User[] = users.slice();
+    const group: Group = await this._groupService.getGroup( groupName );
+    for (const user of usersIterable ) {
+      const isAlreadyInGroup: boolean = await this._memberService.checkIfInGroup( user, group );
+      if ( isAlreadyInGroup ) {
+        users = this.removeFromListOfUsers( user, users);
+      } else {
+        const isAlreadyInvited: boolean = await this.checkIfInvited( user.id, group.id );
+        if ( isAlreadyInvited ) {
+          this.removeFromListOfUsers( user, users );
+        }
+      }
+    }
+
+    return users;
+  }
+
+  removeFromListOfUsers( user: User, users: User[] ): User[] {
+    const index = users.findIndex( (elem => {
+      return elem.id === user.id;
+    }));
+    users.splice(index, 1);
+
+    return users;
+  }
+
+  async checkIfInvited( userId: number, groupId: number ): Promise<boolean> {
+    const query: QueryForInviteByUserAndGroupId = new QueryForInviteByUserAndGroupId( userId, groupId );
+    const invite: Invite = await this.inviteRepository.findOne( query );
+
+    return invite !== undefined;
   }
 
 }

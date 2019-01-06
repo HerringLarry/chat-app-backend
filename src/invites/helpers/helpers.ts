@@ -56,3 +56,13 @@ export class AlteredInvite{
         this.groupName = groupName;
     }
 }
+
+export class QueryForInviteByUserAndGroupId{
+    toUserId: number;
+    groupId: number;
+
+    constructor( userId: number, groupId: number ) {
+        this.toUserId = userId;
+        this.groupId = groupId;
+    }
+}
