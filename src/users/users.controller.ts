@@ -12,11 +12,6 @@ export class UsersController {
         return await this._usersService.checkIfUserExists( username, password );
     }
 
-    @Post()
-    async createUser(@Body() registrationFormDto: UserInfoDto) {
-        await this._usersService.createUser( registrationFormDto );
-    }
-
     @Get('/getAllUsers')
     async getAllUsers() {
         return await this._usersService.getAllUsers();

@@ -1,3 +1,4 @@
+import { AuthMiddleware } from './auth.middleware';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 

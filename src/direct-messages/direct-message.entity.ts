@@ -15,6 +15,6 @@ export class DirectMessage {
 
   @Column() text: string;
 
-  @CreateDateColumn({type: 'timestamp'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
   createdAt: Date;
 }

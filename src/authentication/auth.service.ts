@@ -12,7 +12,7 @@ export class AuthService {
 
   signIn( usern: string ){
     const user: JwtPayload = { username: usern };
-    const secretOrKey = 'secret';
+    const secretOrKey = 'secretKey';
     const token = jwt.sign(user, secretOrKey);
     return { token };
   }
