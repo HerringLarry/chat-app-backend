@@ -1,3 +1,4 @@
+import { GroupService } from './../groups/group.service';
 import {
     WebSocketGateway,
     SubscribeMessage,
@@ -10,6 +11,10 @@ import { Observable } from 'rxjs';
 import { UsersService } from 'users/users.service';
 import { User } from 'users/user.entity';
 import { MessageService } from './message.service';
+import { MemberService } from 'members/member.service';
+import { Group } from 'groups/group.entity';
+import { Member } from 'members/member.entity';
+import { ResponseObject } from './helpers/helpers';
 
 @WebSocketGateway(9995)
   export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -21,6 +26,8 @@ import { MessageService } from './message.service';
     constructor(
       private usersService: UsersService,
       private messagesService: MessageService,
+      private groupService: GroupService,
+      private memberService: MemberService,
     ) {}
 
     async handleConnection(socket) {
@@ -51,11 +58,12 @@ import { MessageService } from './message.service';
         const result = data;
 
         await this.messagesService.createMessage(result);
-        const messages = await this.messagesService.getMessages(data.groupName, data.threadId);
-        client.broadcast.to(data.threadId + '/' + data.groupName).emit(event, messages);
+        const responseObject: ResponseObject = await this.getResponseObject( data.groupName, data.threadId);
+        console.log(responseObject);
+        client.broadcast.to(data.threadId + '/' + data.groupName).emit(event, responseObject);
 
         return Observable.create(observer =>
-          observer.next({ event, data: messages }),
+          observer.next({ event, data: responseObject }),
       );
     }
 
@@ -65,17 +73,27 @@ import { MessageService } from './message.service';
       const event: string = 'message';
       const threadId: number = data.split('/')[0];
       const groupName: string = data.split('/')[1];
-      const messages = await this.messagesService.getMessages(groupName, threadId);
+      const responseObject: ResponseObject = await this.getResponseObject( groupName, threadId );
       // Send last messages to the connected user
-      client.emit(event, messages);
+      client.emit(event, responseObject);
 
       return Observable.create(observer =>
-        observer.next({ event, data: messages }),
+        observer.next({ event, data: responseObject }),
     );
     }
 
     @SubscribeMessage('leave')
     onRoomLeave(client, data: any): void {
       client.leave(data);
+    }
+
+    async getResponseObject( groupName: string, threadId: number ): Promise<ResponseObject> {
+      const messages = await this.messagesService.getMessages(groupName, threadId);
+      const group: Group = await this.groupService.getGroup( groupName );
+      const members: Member[] = await this.memberService.findAllMembersInGroup( group );
+      const users: User[] = await this.usersService.findUsersByMembership( members );
+      const responseObject: ResponseObject = new ResponseObject( messages, users );
+
+      return responseObject;
     }
 }

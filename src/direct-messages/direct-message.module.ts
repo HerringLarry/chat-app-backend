@@ -13,9 +13,10 @@ import { DirectMessageThreadService } from 'direct-message-thread/direct-message
 import { DirectMessageThreadModule } from 'direct-message-thread/direct-message-thread.module';
 import { MessageModule } from 'messages/message.module';
 import { MessageService } from 'messages/message.service';
+import { MemberModule } from 'members/member.module';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([DirectMessage]), GroupModule, DirectMessageThreadModule, UsersModule,
+    imports: [ TypeOrmModule.forFeature([DirectMessage]), GroupModule, DirectMessageThreadModule, UsersModule, MemberModule,
     ],
     controllers: [
         DirectMessageController,

@@ -9,8 +9,6 @@ export class DirectMessage {
 
   @Column() dmThreadId: number;
 
-  @Column() username: string;
-
   @Column() userId: number;
 
   @Column() text: string;

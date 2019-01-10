@@ -24,11 +24,14 @@ export class ThreadService {
   async createThread( threadCreationDto: ThreadCreationDto ): Promise<void> {
     const group: Group = await this._groupService.getGroup( threadCreationDto.groupName );
     const threadObject: ThreadObject = new ThreadObject( threadCreationDto, group );
-    await this.threadRepository.save(threadObject);
-    const query: QueryWithName = new QueryWithName(threadObject.name, group.id);
-    const thread: Thread = await this.threadRepository.findOne(query);
-    const user: User = await this._userService.findUser(threadCreationDto.username);
-    await this._memberService.addThreadToAllMembers(group, thread );
+    const doesThreadExist: Thread = await this.threadRepository.findOne( threadObject );
+    if ( doesThreadExist === undefined ) {
+      await this.threadRepository.save(threadObject);
+      const query: QueryWithName = new QueryWithName(threadObject.name, group.id);
+      const thread: Thread = await this.threadRepository.findOne(query);
+      const user: User = await this._userService.findUser(threadCreationDto.username);
+      await this._memberService.addThreadToAllMembers(group, thread );
+    }
   }
 
   async getThread( id: number , groupName: string ): Promise<Thread> {

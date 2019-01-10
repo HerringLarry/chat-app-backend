@@ -51,6 +51,7 @@ export class MemberService {
   async addDirectThreadToMember( user: User, group: Group, directThread: DirectMessageThread ): Promise<void>{
     const member: Member = await this.findMember(user, group);
     member.directThreads.push( directThread.id );
+
     await this.memberRepository.save(member);
   }
 

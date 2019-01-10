@@ -10,9 +10,10 @@ import { Message } from './message.entity';
 import { ThreadService } from 'threads/thread.service';
 import { GroupService } from 'groups/group.service';
 import { ThreadModule } from 'threads/thread.module';
+import { MemberModule } from 'members/member.module';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Message]), GroupModule, ThreadModule, UsersModule,
+    imports: [ TypeOrmModule.forFeature([Message]), GroupModule, ThreadModule, UsersModule, MemberModule,
     ],
     controllers: [
         MessageController,

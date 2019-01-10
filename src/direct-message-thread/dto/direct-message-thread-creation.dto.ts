@@ -1,4 +1,7 @@
+import { User } from 'users/user.entity';
+
 export class DMThreadCreationDto{
-    userNames: string[];
+    users: User[];
+    currentUserId: number;
     groupName: string;
 }

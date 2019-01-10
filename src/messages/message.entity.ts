@@ -12,8 +12,6 @@ export class Message {
 
   @Column() threadId: number;
 
-  @Column() username: string;
-
   @Column() userId: number;
 
   @Column() text: string;

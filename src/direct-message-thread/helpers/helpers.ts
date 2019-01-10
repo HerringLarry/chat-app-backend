@@ -52,11 +52,11 @@ export class QueryForThreadWithId{
 
 export function getAllUserIds( users: User[] ): number[] {
     const ids = [];
-    users.forEach( user => {
-        ids.push(user.id);
-    });
+    for ( const user of users ) {
+        ids.push( user.id );
+    }
 
-    return ids;
+    return ids.sort();
 }
 
 export function getAllUsernames( users: User[] ): string[] {

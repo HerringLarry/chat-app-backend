@@ -23,11 +23,15 @@ export class DirectMessageThreadService {
 
   async createDirectMessageThread( dmThreadCreationDto: DMThreadCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( dmThreadCreationDto.groupName );
-    const users: User[] = await this._userService.findUsers( dmThreadCreationDto.userNames );
+    console.log(dmThreadCreationDto);
+    const originalUser: User = await this._userService.findUserById( dmThreadCreationDto.currentUserId );
+    const users: User[] = dmThreadCreationDto.users;
+    users.push( originalUser );
     const threadObject: DMThreadObject = new DMThreadObject( users, group );
     const queryForThreadWithUsers: QueryForThreadWithUsers = new QueryForThreadWithUsers(users, group);
     const directThreadCheck = await this.dmThreadRepository.findOne(queryForThreadWithUsers);
     let results = null;
+    console.log(directThreadCheck);
     if ( directThreadCheck === undefined){
       results = await this.dmThreadRepository.save(threadObject);
       const directThread = await this.dmThreadRepository.findOne(queryForThreadWithUsers);

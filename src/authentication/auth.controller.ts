@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserInfoDto } from 'users/dto/user-info.dto';
+import { User } from 'users/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,9 @@ export class AuthController {
     async signIn(@Param('username') username: string, @Param('password') password: string ) {
         const result: boolean = await this._usersService.checkIfUserExists( username, password );
         if ( result ) {
-            return this._authService.signIn( username );
+            const user: User = await this._usersService.findUser( username );
+            console.log(user);
+            return this._authService.signIn( user );
         }
     }
 }

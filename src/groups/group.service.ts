@@ -22,12 +22,16 @@ export class GroupService {
     const user: User = await this._usersService.findUser( groupCreationDto.username );
     if ( user ){
       const groupObject: GroupObject = new GroupObject( groupCreationDto, user );
-      await this.groupRepository.save(groupObject);
-      const group: Group = await this.getGroup( groupObject.name );
-      await this._memberService.createMember( user, group );
-      // create general thread maybe some other standard threads
-
-      return true;
+      const groupExists: Group = await this.groupRepository.findOne( groupObject );
+      if ( groupExists === undefined ) {
+        await this.groupRepository.save(groupObject);
+        const group: Group = await this.getGroup( groupObject.name );
+        await this._memberService.createMember( user, group );
+        // create general thread maybe some other standard threads
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
