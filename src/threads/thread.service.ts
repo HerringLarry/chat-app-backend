@@ -10,6 +10,7 @@ import { MemberService } from 'members/member.service';
 import { UsersService } from 'users/users.service';
 import { User } from 'users/user.entity';
 import { Member } from 'members/member.entity';
+import { CreationResponseDto } from './dto/creation-response.dto';
 
 @Injectable()
 export class ThreadService {
@@ -21,17 +22,24 @@ export class ThreadService {
               private _userService: UsersService,
   ){}
 
-  async createThread( threadCreationDto: ThreadCreationDto ): Promise<void> {
+  async createThread( threadCreationDto: ThreadCreationDto ): Promise<CreationResponseDto> {
     const group: Group = await this._groupService.getGroup( threadCreationDto.groupName );
     const threadObject: ThreadObject = new ThreadObject( threadCreationDto, group );
     const doesThreadExist: Thread = await this.threadRepository.findOne( threadObject );
+    let creationResponseDto: CreationResponseDto;
+    if ( doesThreadExist !== undefined ){
+      creationResponseDto = new CreationResponseDto( doesThreadExist, true );
+    }
     if ( doesThreadExist === undefined ) {
       await this.threadRepository.save(threadObject);
       const query: QueryWithName = new QueryWithName(threadObject.name, group.id);
       const thread: Thread = await this.threadRepository.findOne(query);
+      creationResponseDto = new CreationResponseDto( thread, false );
       const user: User = await this._userService.findUser(threadCreationDto.username);
       await this._memberService.addThreadToAllMembers(group, thread );
     }
+
+    return creationResponseDto;
   }
 
   async getThread( id: number , groupName: string ): Promise<Thread> {

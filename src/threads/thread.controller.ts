@@ -7,9 +7,9 @@ export class ThreadController {
 
     constructor( private _threadService: ThreadService ) {}
 
-    @Get('/:threadName/:groupName')
-    async getThread(@Param('threadName') threadName: string, @Param('groupName') groupName: string) {
-        return await this._threadService.getThread( threadName, groupName );
+    @Get('/:threadId/:groupName')
+    async getThread(@Param('threadId') threadId: number, @Param('groupName') groupName: string) {
+        return await this._threadService.getThread( threadId, groupName );
     }
 
     @Get('/getThreads/:groupName/:username')
@@ -19,6 +19,6 @@ export class ThreadController {
 
     @Post()
     async createThread(@Body() threadCreationDto: ThreadCreationDto​​) {
-        await this._threadService.createThread( threadCreationDto );
+        return await this._threadService.createThread( threadCreationDto );
     }
 }

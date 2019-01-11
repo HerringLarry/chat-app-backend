@@ -19,6 +19,6 @@ export class DirectMessageThreadController {
 
     @Post()
     async createDirectMessageThread(@Body() threadCreationDto: DMThreadCreationDto) {
-        await this._threadService.createDirectMessageThread( threadCreationDto );
+        return await this._threadService.createDirectMessageThread( threadCreationDto );
     }
 }

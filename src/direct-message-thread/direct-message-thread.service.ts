@@ -1,3 +1,4 @@
+import { CreationResponseDto } from './dto/creation-response.dto';
 import { UsersService } from './../users/users.service';
 import { GroupService } from '../groups/group.service';
 import { Injectable, Inject } from '@nestjs/common';
@@ -21,23 +22,26 @@ export class DirectMessageThreadService {
               private _memberService: MemberService,
   ){}
 
-  async createDirectMessageThread( dmThreadCreationDto: DMThreadCreationDto ): Promise<boolean> {
+  async createDirectMessageThread( dmThreadCreationDto: DMThreadCreationDto ): Promise<CreationResponseDto> {
     const group: Group = await this._groupService.getGroup( dmThreadCreationDto.groupName );
-    console.log(dmThreadCreationDto);
     const originalUser: User = await this._userService.findUserById( dmThreadCreationDto.currentUserId );
     const users: User[] = dmThreadCreationDto.users;
     users.push( originalUser );
     const threadObject: DMThreadObject = new DMThreadObject( users, group );
     const queryForThreadWithUsers: QueryForThreadWithUsers = new QueryForThreadWithUsers(users, group);
     const directThreadCheck = await this.dmThreadRepository.findOne(queryForThreadWithUsers);
-    let results = null;
-    console.log(directThreadCheck);
-    if ( directThreadCheck === undefined){
-      results = await this.dmThreadRepository.save(threadObject);
+    let creationResponseDto: CreationResponseDto;
+    if ( directThreadCheck !== undefined ) {
+      creationResponseDto = new CreationResponseDto( directThreadCheck, true );
+
+    } else {
+      await this.dmThreadRepository.save(threadObject);
       const directThread = await this.dmThreadRepository.findOne(queryForThreadWithUsers);
       await this._memberService.addDirectThreadToMultipleMembers(users, group, directThread);
+      creationResponseDto = new CreationResponseDto( directThread, false );
     }
-    return results ? true : false;
+
+    return creationResponseDto;
   }
 
   async getThread( threadId: number ): Promise<DMThreadWithUsernames> {
