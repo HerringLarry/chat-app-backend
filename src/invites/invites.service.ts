@@ -28,7 +28,7 @@ export class InvitesService {
   ){}
 
   async getAllInvitesForUser( username: string ): Promise<AlteredInvite[]> {
-    const user: User = await this._usersService.findUser( username );
+    const user: User = await this._usersService.getUser( username );
     const queryForInvites: QueryForInvites = new QueryForInvites( user );
     const invites: Invite[] = await this.inviteRepository.find(queryForInvites);
     const alteredInvites: AlteredInvite[] = [];
@@ -55,8 +55,8 @@ export class InvitesService {
   }
 
   async createInvite( modifiedInviteDto: ModifiedInviteDto ): Promise<void> {
-    const toUser: User = await this._usersService.findUser( modifiedInviteDto.toUser );
-    const fromUser: User = await this._usersService.findUser( modifiedInviteDto.fromUser );
+    const toUser: User = await this._usersService.getUser( modifiedInviteDto.toUser );
+    const fromUser: User = await this._usersService.getUser( modifiedInviteDto.fromUser );
     const group: Group = await this._groupService.getGroup( modifiedInviteDto.groupName );
     if ( fromUser !== undefined && toUser !== undefined && group !== undefined ) {
       const invite: InviteObject = new InviteObject( fromUser, toUser, group );
@@ -77,7 +77,7 @@ export class InvitesService {
 
   async acceptInvite( responseDto ): Promise<void> {
     const invite: Invite = await this.findInviteById( responseDto.inviteId );
-    const user: User = await this._usersService.findUserById( invite.toUserId );
+    const user: User = await this._usersService.getUserById( invite.toUserId );
     const group: Group = await this._groupService.getGroupById( invite.groupId );
     const threads: Thread[] = await this._threadService.getAllThreadsAssociatedWithGroup( group );
     await this._memberService.createMemberWithAllThreads(user, group, threads );
@@ -96,9 +96,17 @@ export class InvitesService {
 
   async getListOfRelevantUsers( groupName: string, username: string ): Promise<User[]> {
     let users: User[] = await this._usersService.getAllUsers();
-    const usersIterable: User[] = users.slice();
+    const usersCopy: User[] = users.slice(); // copy users
     const group: Group = await this._groupService.getGroup( groupName );
-    for (const user of usersIterable ) {
+    if ( users.length > 0 && group !== undefined ) {
+      users = await this.removeUsersFromArrayThatAreAlreadyInvitedOrInGroup( users, usersCopy, group );
+    }
+
+    return users;
+  }
+
+  async removeUsersFromArrayThatAreAlreadyInvitedOrInGroup( users: User[], usersCopy: User[], group: Group ): Promise<User[]> {
+    for (const user of usersCopy ) {
       const isAlreadyInGroup: boolean = await this._memberService.checkIfInGroup( user, group );
       if ( isAlreadyInGroup ) {
         users = this.removeFromListOfUsers( user, users);

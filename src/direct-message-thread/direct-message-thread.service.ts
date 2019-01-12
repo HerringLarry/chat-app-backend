@@ -24,7 +24,7 @@ export class DirectMessageThreadService {
 
   async createDirectMessageThread( dmThreadCreationDto: DMThreadCreationDto ): Promise<CreationResponseDto> {
     const group: Group = await this._groupService.getGroup( dmThreadCreationDto.groupName );
-    const originalUser: User = await this._userService.findUserById( dmThreadCreationDto.currentUserId );
+    const originalUser: User = await this._userService.getUserById( dmThreadCreationDto.currentUserId );
     const users: User[] = dmThreadCreationDto.users;
     users.push( originalUser );
     const threadObject: DMThreadObject = new DMThreadObject( users, group );
@@ -60,8 +60,8 @@ export class DirectMessageThreadService {
 
   async getAllThreadsAssociatedWithGroupAndUser( username: string, groupName: string ): Promise<DMThreadWithUsernames[]> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const user: User = await this._userService.findUser( username );
-    const member: Member = await this._memberService.findMember( user, group );
+    const user: User = await this._userService.getUser( username );
+    const member: Member = await this._memberService.getMember( user, group );
     if ( member !== undefined && member.directThreads.length > 0 ) {
       const results = await this.dmThreadRepository.find({
         where: {id: In(member.directThreads)},

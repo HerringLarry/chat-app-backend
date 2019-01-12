@@ -35,7 +35,7 @@ export class ThreadService {
       const query: QueryWithName = new QueryWithName(threadObject.name, group.id);
       const thread: Thread = await this.threadRepository.findOne(query);
       creationResponseDto = new CreationResponseDto( thread, false );
-      const user: User = await this._userService.findUser(threadCreationDto.username);
+      const user: User = await this._userService.getUser(threadCreationDto.username);
       await this._memberService.addThreadToAllMembers(group, thread );
     }
 
@@ -52,8 +52,8 @@ export class ThreadService {
 
   async getAllThreadsAssociatedWithMember( groupName: string, username: string ): Promise<Thread[]> {
     const group: Group = await this._groupService.getGroup( groupName );
-    const user: User = await this._userService.findUser( username );
-    const member: Member = await this._memberService.findMember(user, group);
+    const user: User = await this._userService.getUser( username );
+    const member: Member = await this._memberService.getMember(user, group);
     if ( member !== undefined && member.threads.length > 0){
       const results = await this.threadRepository.find({
         where: {id: In(member.threads)},

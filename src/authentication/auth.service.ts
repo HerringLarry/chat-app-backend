@@ -20,6 +20,6 @@ export class AuthService {
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.usersService.findUser(payload.username);
+    return await this.usersService.getUser(payload.username);
   }
 }

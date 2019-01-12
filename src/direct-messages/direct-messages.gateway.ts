@@ -30,7 +30,7 @@ import { ResponseObject } from './helpers/helpers';
     ) {}
 
     async handleConnection(socket) {
-        const user: User = await this.usersService.findUser( socket.handshake.query.username);
+        const user: User = await this.usersService.getUser( socket.handshake.query.username);
         this.connectedUsers = [...this.connectedUsers, String(user.id)];
         // Send list of connected users
         this.server.emit('users', this.connectedUsers);
@@ -38,7 +38,7 @@ import { ResponseObject } from './helpers/helpers';
     }
 
     async handleDisconnect(socket) {
-      const user: User = await this.usersService.findUser( socket.handshake.query.username );
+      const user: User = await this.usersService.getUser( socket.handshake.query.username );
       const userPos = this.connectedUsers.indexOf(String(user.id));
 
       if (userPos > -1) {
@@ -88,8 +88,8 @@ import { ResponseObject } from './helpers/helpers';
     async getResponseObject( groupName: string, threadId: number ): Promise<ResponseObject> {
       const messages = await this.directMessagesService.getMessages(groupName, threadId);
       const group: Group = await this.groupService.getGroup( groupName );
-      const members: Member[] = await this.memberService.findAllMembersInGroup( group );
-      const users: User[] = await this.usersService.findUsersByMembership( members );
+      const members: Member[] = await this.memberService.getAllMembersInGroup( group );
+      const users: User[] = await this.usersService.getUsersByMembership( members );
       const responseObject: ResponseObject = new ResponseObject( users, messages );
 
       return responseObject;

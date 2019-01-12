@@ -29,8 +29,8 @@ export class MemberService {
     return await this.memberRepository.save(memberWithAllThreads);
   }
 
-  async findAllMemberships( username: string ): Promise<Member[]> {
-    const user: User = await this._usersService.findUser( username );
+  async getAllMemberships( username: string ): Promise<Member[]> {
+    const user: User = await this._usersService.getUser( username );
     const query: Query = new Query(user);
 
     return await this.memberRepository.find(query);
@@ -43,36 +43,36 @@ export class MemberService {
   }
 
   async addThreadToMember( user: User, group: Group, thread: Thread): Promise<void> {
-    const member: Member = await this.findMember(user, group);
+    const member: Member = await this.getMember(user, group);
     member.threads.push( thread.id );
     await this.memberRepository.save(member);
   }
 
   async addDirectThreadToMember( user: User, group: Group, directThread: DirectMessageThread ): Promise<void>{
-    const member: Member = await this.findMember(user, group);
+    const member: Member = await this.getMember(user, group);
     member.directThreads.push( directThread.id );
 
     await this.memberRepository.save(member);
   }
 
   async checkIfInGroup( user: User, group: Group ): Promise<boolean> {
-    const member: Member = await this.findMember( user, group );
+    const member: Member = await this.getMember( user, group );
 
     return member !== undefined;
   }
 
-  async findMember( user: User, group: Group ): Promise<Member>{
+  async getMember( user: User, group: Group ): Promise<Member>{
     const queryForSpecificMember: QueryForSpecificMember = new QueryForSpecificMember(user, group);
     return await this.memberRepository.findOne(queryForSpecificMember);
   }
 
-  async findAllMembersInGroup( group: Group ): Promise<Member[]>{
+  async getAllMembersInGroup( group: Group ): Promise<Member[]>{
     const queryForAllUsersInGroup: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( group );
     return await this.memberRepository.find(queryForAllUsersInGroup);
   }
 
   async addThreadToAllMembers( group: Group, thread: Thread ): Promise<void> {
-    const members: Member[] = await this.findAllMembersInGroup( group );
+    const members: Member[] = await this.getAllMembersInGroup( group );
     for ( const member of members ) {
       member.threads.push(thread.id);
       await this.memberRepository.save(member);

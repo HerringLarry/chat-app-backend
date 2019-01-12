@@ -20,7 +20,7 @@ export class GroupController {
 
     @Get('/getUserGroups/:username')
     async getAllGroupsAssociatedWithUser(@Param('username') username: string, @Headers() headers: any) {
-        return await this._groupService.findAllGroupsWithUser( username );
+        return await this._groupService.getAllGroupsWithUser( username );
     }
 
     @Get('/:username/:group')

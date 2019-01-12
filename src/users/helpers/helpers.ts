@@ -1,5 +1,4 @@
-import { Member } from "members/member.entity";
-import { User } from "users/user.entity";
+import { Member } from 'members/member.entity';
 
 export class Query {
     username: string;

@@ -24,7 +24,7 @@ export class MessageService {
   async createMessage( messageCreationDto: MessageCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( messageCreationDto.groupName );
     const thread: Thread = await this._threadService.getThread( messageCreationDto.threadId, messageCreationDto.groupName );
-    const user: User = await this._userService.findUser( messageCreationDto.username );
+    const user: User = await this._userService.getUser( messageCreationDto.username );
     const messageObject: MessageObject = new MessageObject( messageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
 

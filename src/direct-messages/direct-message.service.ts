@@ -26,7 +26,7 @@ export class DirectMessageService {
   async createMessage( dmMessageCreationDto: DirectMessageCreationDto ): Promise<boolean> {
     const group: Group = await this._groupService.getGroup( dmMessageCreationDto.groupName );
     const thread: DMThreadWithUsernames = await this._directThreadService.getThreadWithId( dmMessageCreationDto.threadId, group );
-    const user: User = await this._userService.findUser( dmMessageCreationDto.username );
+    const user: User = await this._userService.getUser( dmMessageCreationDto.username );
     const messageObject: DirectMessageObject = new DirectMessageObject( dmMessageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
     return results ? true : false;

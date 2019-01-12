@@ -19,8 +19,7 @@ export class AuthController {
     async signIn(@Param('username') username: string, @Param('password') password: string ) {
         const result: boolean = await this._usersService.checkIfUserExists( username, password );
         if ( result ) {
-            const user: User = await this._usersService.findUser( username );
-            console.log(user);
+            const user: User = await this._usersService.getUser( username );
             return this._authService.signIn( user );
         }
     }

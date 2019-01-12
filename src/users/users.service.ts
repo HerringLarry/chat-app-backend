@@ -20,18 +20,18 @@ export class UsersService {
     return result ? true : false;
   }
 
-  async findUser( username: string ): Promise<User> {
+  async getUser( username: string ): Promise<User> {
     const query: Query = new Query(username);
     return await this.userRepository.findOne(query);
   }
 
-  async findUserById( userId: number ): Promise<User> {
+  async getUserById( userId: number ): Promise<User> {
     const query: QueryById = new QueryById( userId );
 
     return await this.userRepository.findOne( query );
   }
 
-  async findUsers( usernames: string[] ): Promise<User[]> {
+  async getUsers( usernames: string[] ): Promise<User[]> {
     const users: User[] = await this.userRepository.find({
       where: {username: In(usernames)},
     });
@@ -43,13 +43,13 @@ export class UsersService {
   }
 
   async createUser( userInfoDto: UserInfoDto ): Promise<boolean> {
-    const result: User = await this.findUser( userInfoDto.username );
+    const result: User = await this.getUser( userInfoDto.username );
     if ( !result ){
       return await this.userRepository.save(userInfoDto) ? true : false;
     }
   }
 
-  async findUsersByMembership( members: Member[] ): Promise<User[]> { // need to filter out user making request
+  async getUsersByMembership( members: Member[] ): Promise<User[]> { // need to filter out user making request
     const queryForUsersFromMembers: QueryForUsersFromMembers = new QueryForUsersFromMembers( members );
     const users: User[] = await this.userRepository.find({
       where: {id: In(queryForUsersFromMembers.userIds)},

@@ -19,7 +19,7 @@ export class GroupService {
   ){}
 
   async createGroup( groupCreationDto: GroupCreationDto ): Promise<boolean> {
-    const user: User = await this._usersService.findUser( groupCreationDto.username );
+    const user: User = await this._usersService.getUser( groupCreationDto.username );
     if ( user ){
       const groupObject: GroupObject = new GroupObject( groupCreationDto, user );
       const groupExists: Group = await this.groupRepository.findOne( groupObject );
@@ -37,16 +37,20 @@ export class GroupService {
     }
   }
 
-  async findAllGroupsWithUser( username: string ): Promise<Group[]> {
-    const members: Member[] =  await this._memberService.findAllMemberships(username);
-    const groupIds: number[] = [];
-    members.forEach( member => {
-      groupIds.push(member.groupId);
-    });
+  async getAllGroupsWithUser( username: string ): Promise<Group[]> {
+    const members: Member[] =  await this._memberService.getAllMemberships(username);
+    if ( members.length > 0 ) {
+      const groupIds: number[] = [];
+      members.forEach( member => {
+        groupIds.push(member.groupId);
+      });
 
-    return await this.groupRepository.find({
-      where: {id: In(groupIds)},
-    });
+      return await this.groupRepository.find({
+        where: {id: In(groupIds)},
+      });
+    } else {
+      return [];
+    }
   }
 
   async getGroup( name: string ): Promise<Group> {
@@ -58,8 +62,8 @@ export class GroupService {
 
   async getAllUsersInGroup( username: string, groupName: string ): Promise<User[]>{
     const group: Group = await this.getGroup(groupName);
-    const members: Member[] = await this._memberService.findAllMembersInGroup( group );
-    const users: User[] = await this._usersService.findUsersByMembership( members );
+    const members: Member[] = await this._memberService.getAllMembersInGroup( group );
+    const users: User[] = await this._usersService.getUsersByMembership( members );
 
     return users;
   }
