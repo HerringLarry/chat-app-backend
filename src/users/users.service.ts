@@ -7,12 +7,15 @@ import { UserInfoDto } from './dto/user-info.dto';
 import { Query, UserExistsQuery, QueryForUsersFromMembers, QueryById } from './helpers/helpers';
 import { Member } from 'members/member.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
+import { SettingsService } from 'settings/settings.service';
 
 @Injectable()
 export class UsersService {
 
   constructor(@InjectRepository(User)
-  private readonly userRepository: Repository<User> ){}
+    private readonly userRepository: Repository<User>,
+              private _settingsService: SettingsService,
+  ){}
 
   async checkIfUserExists( username: string, password: string ): Promise<boolean> {
     const query: UserExistsQuery = new UserExistsQuery( username, password );
@@ -45,8 +48,13 @@ export class UsersService {
   async createUser( userInfoDto: UserInfoDto ): Promise<boolean> {
     const result: User = await this.getUser( userInfoDto.username );
     if ( !result ){
-      return await this.userRepository.save(userInfoDto) ? true : false;
+      const resultOfCreation: any = await this.userRepository.save(userInfoDto);
+      const user: User = await this.getUser( userInfoDto.username );
+      const createdSettings: any = await this._settingsService.initializeUserSettings( user );
+      console.log(user);
+      return user && createdSettings;
     }
+    return false;
   }
 
   async getUsersByMembership( members: Member[] ): Promise<User[]> { // need to filter out user making request

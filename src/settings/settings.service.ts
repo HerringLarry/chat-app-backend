@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Any } from 'typeorm';
 import { Settings } from './settings.entity';
 import { SettingsDto } from './dto/settings.dto';
-import { Query } from './helpers/helpers';
+import { Query, InitializedSettings } from './helpers/helpers';
+import { User } from 'users/user.entity';
 
 @Injectable()
 export class SettingsService {
@@ -21,5 +22,12 @@ export class SettingsService {
 
   async updateUserSettings( settingsDto: SettingsDto ): Promise<void> {
     await this.settingsRepository.save( settingsDto );
+  }
+
+  async initializeUserSettings( user: User ): Promise<boolean> {
+    const initializedSettings: InitializedSettings = new InitializedSettings( user, true );
+    const results = await this.settingsRepository.save( initializedSettings );
+
+    return results ? true : false;
   }
 }

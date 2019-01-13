@@ -14,6 +14,7 @@ import { GroupController } from 'groups/group.controller';
 import { InvitesController } from 'invites/invites.controller';
 import { ThreadController } from 'threads/thread.controller';
 import { MessageController } from 'messages/message.controller';
+import { SettingsModule } from 'settings/settings.module';
 
 @Module({
   imports: [

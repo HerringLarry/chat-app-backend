@@ -10,12 +10,14 @@ export class SettingsController {
     constructor( private _settingsService: SettingsService ) {}
 
    @Get('/:userId')
-   async getUserSettings( @Param('username') userId: number ): Promise<Settings> {
+   async getUserSettings( @Param('userId') userId: number ): Promise<Settings> {
+
        return await this._settingsService.getUserSettings( userId );
    }
 
    @Put()
    async updateUserSettings( @Body() settingsDto: SettingsDto ): Promise<void> {
+
        await this._settingsService.updateUserSettings( settingsDto );
    }
 }

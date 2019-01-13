@@ -1,7 +1,7 @@
-import { Settings } from './settings.entity';
+import { Notifications } from './notifications.entity';
 import { Module } from '@nestjs/common';
-import { SettingsService } from './settings.service';
-import { SettingsController } from './settings.controller';
+import { NotificationsService } from './notifications.service';
+import { NotificationsController } from './notifications.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
 import { UsersModule } from '../users/users.module';
@@ -10,16 +10,16 @@ import { MemberModule } from 'members/member.module';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Settings]),
+    imports: [ TypeOrmModule.forFeature([Notifications]),
     ],
     controllers: [
-        SettingsController,
+        NotificationsController,
     ],
     providers: [
-        SettingsService,
+        NotificationsService,
     ],
     exports: [
-        SettingsService,
+        NotificationsService,
     ],
 })
-export class SettingsModule {}
+export class NotificationsModule {}
