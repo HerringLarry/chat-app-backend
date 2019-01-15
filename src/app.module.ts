@@ -1,3 +1,4 @@
+import { NotificationsModule } from './notifications/notifications.module';
 import { MessageModule } from './messages/message.module';
 import { ThreadModule } from 'threads/thread.module';
 import { Module } from '@nestjs/common';
@@ -24,6 +25,7 @@ import { SettingsModule } from 'settings/settings.module';
     MemberModule,
     InvitesModule,
     SettingsModule,
+    NotificationsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

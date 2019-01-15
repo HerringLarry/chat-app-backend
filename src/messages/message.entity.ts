@@ -18,4 +18,7 @@ export class Message {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
   createdAt: Date;
+
+  @Column('int', { array: true, default: '{}', nullable: false }) // Who's read the message
+  userIds: number[];
 }

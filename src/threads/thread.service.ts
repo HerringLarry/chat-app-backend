@@ -11,6 +11,7 @@ import { UsersService } from 'users/users.service';
 import { User } from 'users/user.entity';
 import { Member } from 'members/member.entity';
 import { CreationResponseDto } from './dto/creation-response.dto';
+import { NotificationsService } from 'notifications/notifications.service';
 
 @Injectable()
 export class ThreadService {
@@ -20,6 +21,7 @@ export class ThreadService {
               private _groupService: GroupService,
               private _memberService: MemberService,
               private _userService: UsersService,
+              private _notificationsService: NotificationsService,
   ){}
 
   async createThread( threadCreationDto: ThreadCreationDto ): Promise<CreationResponseDto> {

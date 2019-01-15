@@ -10,6 +10,8 @@ import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
 import { ThreadService } from 'threads/thread.service';
+import { Notification, ThreadNotification } from './dto/notification.dto';
+import { NotificationsService } from 'notifications/notifications.service';
 
 @Injectable()
 export class MessageService {
@@ -35,9 +37,67 @@ export class MessageService {
     const group: Group = await this._groupService.getGroup( groupName );
     const thread: Thread = await this._threadService.getThread( threadId, groupName );
     const query: Query = new Query(group, thread);
-
     const results = await this.messageRepository.find(query);
 
-    return results;
+    return results.sort( (a: Message, b: Message ) => {
+      if ( a.createdAt > b.createdAt ) {
+        return 1;
+      } else if ( a.createdAt < b.createdAt ) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  async addUserIdToMessages( user: User, messages: Message[] ): Promise<void> {
+    for ( const message of messages ) {
+      if ( !this.isUserInUserIds( user, message ) )  {
+        message.userIds.push( user.id );
+        await this.messageRepository.save(message);
+      }
+    }
+  }
+
+  isUserInUserIds( user, message: Message ): boolean {
+    for ( const userId of message.userIds ) {
+      if ( user.id === userId ) {
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async getNotifications( userId: number, groupId: number ): Promise<Notification> {
+    const user: User = await this._userService.getUserById( userId );
+    const group: Group = await this._groupService.getGroupById( groupId );
+    const threads: Thread[] = await this._threadService.getAllThreadsAssociatedWithGroup(group);
+    const notifications: ThreadNotification[] = [];
+    for ( const thread of threads ){
+      const messages: Message[] = await this.getMessages( group.name, thread.id );
+      const notificationCount: number = this.getNotificationCount( messages, user );
+      const threadNotification: ThreadNotification = new ThreadNotification(thread.id, notificationCount );
+      notifications.push( threadNotification );
+    }
+    const notification: Notification = new Notification( notifications );
+
+    return notification;
+  }
+
+  getNotificationCount( messages: Message[], user: User ): number {
+    let notificationCount = 0;
+    for ( const message of messages ) {
+      if ( this.userIdNotInMessage( message, user ) ){
+        notificationCount += 1;
+      }
+    }
+
+    return notificationCount;
+  }
+
+  userIdNotInMessage( message: Message, user: User ) {
+    return message.userIds.indexOf( user.id ) === -1;
   }
 }

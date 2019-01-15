@@ -11,15 +11,17 @@ import { ThreadService } from 'threads/thread.service';
 import { GroupService } from 'groups/group.service';
 import { ThreadModule } from 'threads/thread.module';
 import { MemberModule } from 'members/member.module';
+import { NotificationsModule } from 'notifications/notifications.module';
+import { NotificationsService } from 'notifications/notifications.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Message]), GroupModule, ThreadModule, UsersModule, MemberModule,
+    imports: [ TypeOrmModule.forFeature([Message]), GroupModule, ThreadModule, UsersModule, MemberModule, NotificationsModule,
     ],
     controllers: [
         MessageController,
     ],
     providers: [
-        MessageService, ThreadService, GroupService, UsersService, MessagesGateway,
+        MessageService, ThreadService, GroupService, UsersService, MessagesGateway, NotificationsService,
     ],
 })
 export class MessageModule {}

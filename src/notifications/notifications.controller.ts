@@ -9,15 +9,9 @@ export class NotificationsController {
 
     constructor( private _notificationsService: NotificationsService ) {}
 
-   @Get('/:userId')
-   async getUserSettings( @Param('userId') userId: number ): Promise<Notifications> {
+   @Get('/:userId/:groupId')
+   async getUserSettings( @Param('userId') userId: number, @Param('groupId') groupId: number ): Promise<Notifications[]> {
 
-       return await this._notificationsService.getUserSettings( userId );
-   }
-
-   @Put()
-   async updateUserSettings( @Body() settingsDto: SettingsDto ): Promise<void> {
-
-       await this._notificationsService.updateUserSettings( settingsDto );
+       return await this._notificationsService.getAllNotificationsForUserInGroup( userId, groupId );
    }
 }

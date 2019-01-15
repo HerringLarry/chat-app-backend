@@ -13,10 +13,10 @@ export class DMThreadObject {
 
 export class DMThreadWithUsernames {
     id: number;
-    usernames: string[];
+    users: User[];
     groupId: number;
     constructor( users: User[], groupId: number, id: number){
-        this.usernames = getAllUsernames( users );
+        this.users = users;
         this.groupId = groupId;
         this.id = id;
     }
@@ -52,8 +52,10 @@ export class QueryForThreadWithId{
 
 export function getAllUserIds( users: User[] ): number[] {
     const ids = [];
-    for ( const user of users ) {
-        ids.push( user.id );
+    if ( users.length > 0) {
+        for ( const user of users ) {
+            ids.push( user.id );
+        }
     }
 
     return ids.sort();

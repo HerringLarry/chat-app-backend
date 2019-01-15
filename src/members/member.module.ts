@@ -6,12 +6,14 @@ import { UsersService } from '../users/users.service';
 import { UsersModule } from '../users/users.module';
 import { GroupModule } from 'groups/group.module';
 import { GroupService } from 'groups/group.service';
+import { NotificationsModule } from 'notifications/notifications.module';
+import { NotificationsService } from 'notifications/notifications.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Member]), UsersModule,
+    imports: [ TypeOrmModule.forFeature([Member]), UsersModule, NotificationsModule,
     ],
     providers: [
-        MemberService, UsersService,
+        MemberService, UsersService, NotificationsService,
     ],
     exports: [
         MemberService,

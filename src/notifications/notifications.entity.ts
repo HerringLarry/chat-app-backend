@@ -11,4 +11,6 @@ export class Notifications {
   @Column() groupId: number;
 
   @Column() notifications: number;
+
+  @Column() connected: boolean;
 }

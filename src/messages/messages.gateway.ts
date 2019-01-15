@@ -15,6 +15,7 @@ import { MemberService } from 'members/member.service';
 import { Group } from 'groups/group.entity';
 import { Member } from 'members/member.entity';
 import { ResponseObject } from './helpers/helpers';
+import { NotificationsService } from 'notifications/notifications.service';
 
 @WebSocketGateway(9995)
   export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -28,6 +29,7 @@ import { ResponseObject } from './helpers/helpers';
       private messagesService: MessageService,
       private groupService: GroupService,
       private memberService: MemberService,
+      private _notificationsService: NotificationsService,
     ) {}
 
     async handleConnection(socket) {
@@ -53,13 +55,13 @@ import { ResponseObject } from './helpers/helpers';
     }
 
     @SubscribeMessage('message')
-    async onMessage(client, data: any) {
+    async onMessage(client, data: any) { // Add Notifications to non-listed users
         const event: string = 'message';
         const result = data;
-
         await this.messagesService.createMessage(result);
-        const responseObject: ResponseObject = await this.getResponseObject( data.groupName, data.threadId);
-        client.broadcast.to(data.threadId + '/' + data.groupName).emit(event, responseObject);
+        // await this._notificationsService.updateAllNotificationsForThreadInGroup( data.groupId, data.threadId);
+        const responseObject: ResponseObject = await this.getResponseObject( data.groupId, data.threadId);
+        client.broadcast.to(data.threadId + '/' + data.groupId).emit(event, responseObject);
 
         return Observable.create(observer =>
           observer.next({ event, data: responseObject }),
@@ -67,12 +69,15 @@ import { ResponseObject } from './helpers/helpers';
     }
 
     @SubscribeMessage('join')
-    async onRoomJoin(client, data: any): Promise<any> {
+    async onRoomJoin(client, data: any): Promise<any> { // Reset notifications and reset client username on frontend
       client.join(data);
       const event: string = 'message';
       const threadId: number = data.split('/')[0];
-      const groupName: string = data.split('/')[1];
-      const responseObject: ResponseObject = await this.getResponseObject( groupName, threadId );
+      const groupId: number = data.split('/')[1];
+      const user: User = await this.usersService.getUser( client.handshake.query.username );
+      // await this._notificationsService.resetNotificationsCountAndSetConnectedToTrue(user.id, threadId, groupId);
+      const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
+      await this.messagesService.addUserIdToMessages( user, responseObject.messages );
       // Send last messages to the connected user
       client.emit(event, responseObject);
 
@@ -82,13 +87,17 @@ import { ResponseObject } from './helpers/helpers';
     }
 
     @SubscribeMessage('leave')
-    onRoomLeave(client, data: any): void {
+    async onRoomLeave(client, data: any) {
+      const threadId: number = data.split('/')[0];
+      const groupId: number = data.split('/')[1];
+      const user: User = await this.usersService.getUser( client.handshake.query.username );
+      await this._notificationsService.setConnectedToFalse(user.id, threadId, groupId );
       client.leave(data);
     }
 
-    async getResponseObject( groupName: string, threadId: number ): Promise<ResponseObject> {
-      const messages = await this.messagesService.getMessages(groupName, threadId);
-      const group: Group = await this.groupService.getGroup( groupName );
+    async getResponseObject( groupId: number, threadId: number ): Promise<ResponseObject> {
+      const group: Group = await this.groupService.getGroupById( groupId );
+      const messages = await this.messagesService.getMessages(group.name, threadId);
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
       const responseObject: ResponseObject = new ResponseObject( messages, users );

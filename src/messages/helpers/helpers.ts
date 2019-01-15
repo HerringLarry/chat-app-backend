@@ -6,6 +6,7 @@ import { Message } from 'messages/message.entity';
 
 export class MessageObject {
     userId: number;
+    userIds: number[];
     groupId: number;
     threadId: number;
     text: string;
@@ -17,6 +18,7 @@ export class MessageObject {
         this.threadId = thread.id;
         this.userId = user.id;
         this.username = messageCreationDto.username;
+        this.userIds = [ user.id ];
     }
 }
 

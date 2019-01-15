@@ -8,9 +8,11 @@ import { UsersModule } from '../users/users.module';
 import { MemberService } from 'members/member.service';
 import { MemberModule } from 'members/member.module';
 import { PassportModule } from '@nestjs/passport';
+import { MessageService } from 'messages/message.service';
+import { MessageModule } from 'messages/message.module';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Notifications]),
+    imports: [ TypeOrmModule.forFeature([Notifications]), MessageModule,
     ],
     controllers: [
         NotificationsController,
@@ -19,7 +21,7 @@ import { PassportModule } from '@nestjs/passport';
         NotificationsService,
     ],
     exports: [
-        NotificationsService,
+        NotificationsService, MessageService,
     ],
 })
 export class NotificationsModule {}
