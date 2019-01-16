@@ -13,13 +13,16 @@ import { NotificationsModule } from 'notifications/notifications.module';
 import { NotificationsService } from 'notifications/notifications.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Thread]), GroupModule, UsersModule, MemberModule, NotificationsModule,
+    imports: [ TypeOrmModule.forFeature([Thread]), GroupModule, UsersModule, MemberModule,
     ],
     controllers: [
         ThreadController,
     ],
     providers: [
-        ThreadService, GroupService, UsersService, MemberService, NotificationsService,
+        ThreadService, GroupService, UsersService, MemberService,
+    ],
+    exports: [
+        ThreadService,
     ],
 })
 export class ThreadModule {}

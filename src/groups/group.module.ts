@@ -18,5 +18,8 @@ import { PassportModule } from '@nestjs/passport';
     providers: [
         GroupService, UsersService, MemberService,
     ],
+    exports: [
+        GroupService,
+    ],
 })
 export class GroupModule {}

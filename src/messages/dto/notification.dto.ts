@@ -1,3 +1,5 @@
+import { Message } from "messages/message.entity";
+
 export class Notification{
     threadNotifications: ThreadNotification[];
 
@@ -6,11 +8,21 @@ export class Notification{
     }
 }
 
-export class ThreadNotification{
+export class ThreadNotification {
     threadId: number;
-    notificationCount: number;
-    constructor( threadId: number, notificationCount: number ){
+    strippedDownMessages: StrippedDownMessage[];
+    constructor( threadId: number, strippedDownMessages: StrippedDownMessage[] ){
         this.threadId = threadId;
-        this.notificationCount = notificationCount;
+        this.strippedDownMessages = strippedDownMessages;
+     }
+}
+
+export class StrippedDownMessage{
+    id: number;
+    userIds: number[];
+
+    constructor( message: Message ) {
+        this.id = message.id;
+        this.userIds = message.userIds;
     }
 }

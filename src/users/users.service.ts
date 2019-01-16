@@ -51,7 +51,6 @@ export class UsersService {
       const resultOfCreation: any = await this.userRepository.save(userInfoDto);
       const user: User = await this.getUser( userInfoDto.username );
       const createdSettings: any = await this._settingsService.initializeUserSettings( user );
-      console.log(user);
       return user && createdSettings;
     }
     return false;

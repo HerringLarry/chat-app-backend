@@ -10,18 +10,16 @@ import { MemberModule } from 'members/member.module';
 import { PassportModule } from '@nestjs/passport';
 import { MessageService } from 'messages/message.service';
 import { MessageModule } from 'messages/message.module';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([Notifications]), MessageModule,
-    ],
-    controllers: [
-        NotificationsController,
+    imports: [ MessageModule,
     ],
     providers: [
-        NotificationsService,
+        NotificationsService, MessageService, NotificationsGateway,
     ],
     exports: [
-        NotificationsService, MessageService,
+        NotificationsService,
     ],
 })
 export class NotificationsModule {}

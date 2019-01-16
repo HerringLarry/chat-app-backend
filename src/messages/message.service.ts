@@ -1,5 +1,5 @@
 import { UsersService } from 'users/users.service';
-import { GroupService } from '../groups/group.service';
+import { GroupService } from 'groups/group.service';
 import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,7 +10,7 @@ import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
 import { ThreadService } from 'threads/thread.service';
-import { Notification, ThreadNotification } from './dto/notification.dto';
+import { Notification, ThreadNotification, StrippedDownMessage } from './dto/notification.dto';
 import { NotificationsService } from 'notifications/notifications.service';
 
 @Injectable()
@@ -70,15 +70,15 @@ export class MessageService {
     return false;
   }
 
-  async getNotifications( userId: number, groupId: number ): Promise<Notification> {
+  async getNotifications( userId: number, groupId: number ): Promise<Notification> { // A little complicated, could be simplfiied in future
     const user: User = await this._userService.getUserById( userId );
     const group: Group = await this._groupService.getGroupById( groupId );
     const threads: Thread[] = await this._threadService.getAllThreadsAssociatedWithGroup(group);
     const notifications: ThreadNotification[] = [];
     for ( const thread of threads ){
       const messages: Message[] = await this.getMessages( group.name, thread.id );
-      const notificationCount: number = this.getNotificationCount( messages, user );
-      const threadNotification: ThreadNotification = new ThreadNotification(thread.id, notificationCount );
+      const strippedDownMessages: StrippedDownMessage[] = this.getStrippedDownMessages( messages );
+      const threadNotification: ThreadNotification = new ThreadNotification( thread.id, strippedDownMessages );
       notifications.push( threadNotification );
     }
     const notification: Notification = new Notification( notifications );
@@ -86,18 +86,13 @@ export class MessageService {
     return notification;
   }
 
-  getNotificationCount( messages: Message[], user: User ): number {
-    let notificationCount = 0;
+  private getStrippedDownMessages( messages: Message[] ): StrippedDownMessage[] {
+    const stripped = [];
     for ( const message of messages ) {
-      if ( this.userIdNotInMessage( message, user ) ){
-        notificationCount += 1;
-      }
+      const strippedDownMessage: StrippedDownMessage = new StrippedDownMessage( message );
+      stripped.push( strippedDownMessage );
     }
 
-    return notificationCount;
-  }
-
-  userIdNotInMessage( message: Message, user: User ) {
-    return message.userIds.indexOf( user.id ) === -1;
+    return stripped;
   }
 }

@@ -9,8 +9,6 @@ import { MemberObject, Query, QueryForUsersGroups, QueryForSpecificMember, Query
 import { User } from 'users/user.entity';
 import { Group } from 'groups/group.entity';
 import { Thread } from 'threads/thread.entity';
-import { ThreadService } from 'threads/thread.service';
-import { NotificationsService } from 'notifications/notifications.service';
 
 @Injectable()
 export class MemberService {
@@ -18,7 +16,6 @@ export class MemberService {
   constructor(@InjectRepository(Member)
   private readonly memberRepository: Repository<Member>,
               private _usersService: UsersService,
-              private _notificationsService: NotificationsService,
   ){}
 
   async createMember( user: User, group: Group ) {
@@ -28,7 +25,6 @@ export class MemberService {
 
   async createMemberWithAllThreads( user: User, group: Group, threads: Thread[] ){
     const memberWithAllThreads: MemberWithAllThreadIds = new MemberWithAllThreadIds( user, group, threads );
-    await this._notificationsService.createNotificationsForNewlyJoinedUser( memberWithAllThreads );
     return await this.memberRepository.save(memberWithAllThreads);
   }
 
@@ -76,7 +72,6 @@ export class MemberService {
 
   async addThreadToAllMembers( group: Group, thread: Thread ): Promise<void> {
     const members: Member[] = await this.getAllMembersInGroup( group );
-    await this._notificationsService.createNotificationsForEachUserAfterThreadCreation( thread.id, members );
     for ( const member of members ) {
       member.threads.push(thread.id);
       await this.memberRepository.save(member);

@@ -21,7 +21,6 @@ export class ThreadService {
               private _groupService: GroupService,
               private _memberService: MemberService,
               private _userService: UsersService,
-              private _notificationsService: NotificationsService,
   ){}
 
   async createThread( threadCreationDto: ThreadCreationDto ): Promise<CreationResponseDto> {

@@ -29,8 +29,7 @@ import { NotificationsService } from 'notifications/notifications.service';
       private messagesService: MessageService,
       private groupService: GroupService,
       private memberService: MemberService,
-      private _notificationsService: NotificationsService,
-    ) {}
+      ) {}
 
     async handleConnection(socket) {
         const user: User​​ = await this.usersService.getUser( socket.handshake.query.username);
@@ -59,7 +58,6 @@ import { NotificationsService } from 'notifications/notifications.service';
         const event: string = 'message';
         const result = data;
         await this.messagesService.createMessage(result);
-        // await this._notificationsService.updateAllNotificationsForThreadInGroup( data.groupId, data.threadId);
         const responseObject: ResponseObject = await this.getResponseObject( data.groupId, data.threadId);
         client.broadcast.to(data.threadId + '/' + data.groupId).emit(event, responseObject);
 
@@ -75,7 +73,6 @@ import { NotificationsService } from 'notifications/notifications.service';
       const threadId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
       const user: User = await this.usersService.getUser( client.handshake.query.username );
-      // await this._notificationsService.resetNotificationsCountAndSetConnectedToTrue(user.id, threadId, groupId);
       const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
       await this.messagesService.addUserIdToMessages( user, responseObject.messages );
       // Send last messages to the connected user
@@ -91,7 +88,6 @@ import { NotificationsService } from 'notifications/notifications.service';
       const threadId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
       const user: User = await this.usersService.getUser( client.handshake.query.username );
-      await this._notificationsService.setConnectedToFalse(user.id, threadId, groupId );
       client.leave(data);
     }
 
