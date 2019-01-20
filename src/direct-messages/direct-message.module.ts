@@ -24,5 +24,8 @@ import { MemberModule } from 'members/member.module';
     providers: [
         DirectMessageService, DirectMessageThreadService, GroupService, UsersService, DirectMessagesGateway,
     ],
+    exports: [
+        DirectMessageService,
+    ],
 })
 export class DirectMessageModule {}

@@ -16,6 +16,7 @@ import { Group } from 'groups/group.entity';
 import { Member } from 'members/member.entity';
 import { ResponseObject } from './helpers/helpers';
 import { NotificationsService } from 'notifications/notifications.service';
+import { Message } from './message.entity';
 
 @WebSocketGateway(9995)
   export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {

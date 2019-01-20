@@ -11,9 +11,12 @@ export class Notification{
 export class ThreadNotification {
     threadId: number;
     strippedDownMessages: StrippedDownMessage[];
-    constructor( threadId: number, strippedDownMessages: StrippedDownMessage[] ){
+    isDirectThreadNotification: boolean;
+
+    constructor( threadId: number, strippedDownMessages: StrippedDownMessage[], isDirectThreadNotification: boolean ){
         this.threadId = threadId;
         this.strippedDownMessages = strippedDownMessages;
+        this.isDirectThreadNotification = isDirectThreadNotification;
      }
 }
 

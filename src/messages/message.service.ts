@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './message.entity';
 import { MessageCreationDto } from './dto/message-creation.dto';
-import { MessageObject, Query } from './helpers/helpers';
+import { MessageObject, Query, QueryById } from './helpers/helpers';
 import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
@@ -50,6 +50,22 @@ export class MessageService {
     });
   }
 
+  async getMessagesById( groupId: number, threadId: number ): Promise<Message[]> {
+    const query: QueryById = new QueryById(groupId, threadId);
+
+    const results = await this.messageRepository.find( query );
+
+    return results.sort( (a: Message, b: Message ) => {
+      if ( a.createdAt > b.createdAt ) {
+        return 1;
+      } else if ( a.createdAt < b.createdAt ) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
   async addUserIdToMessages( user: User, messages: Message[] ): Promise<void> {
     for ( const message of messages ) {
       if ( !this.isUserInUserIds( user, message ) )  {
@@ -70,20 +86,24 @@ export class MessageService {
     return false;
   }
 
-  async getNotifications( userId: number, groupId: number ): Promise<Notification> { // A little complicated, could be simplfiied in future
-    const user: User = await this._userService.getUserById( userId );
+  async getAllNotifications( groupId: number ): Promise<ThreadNotification[]> { // A little complicated, could be simplfiied in future
     const group: Group = await this._groupService.getGroupById( groupId );
     const threads: Thread[] = await this._threadService.getAllThreadsAssociatedWithGroup(group);
     const notifications: ThreadNotification[] = [];
     for ( const thread of threads ){
-      const messages: Message[] = await this.getMessages( group.name, thread.id );
-      const strippedDownMessages: StrippedDownMessage[] = this.getStrippedDownMessages( messages );
-      const threadNotification: ThreadNotification = new ThreadNotification( thread.id, strippedDownMessages );
+      const threadNotification: ThreadNotification = await this.getNotifications( groupId, thread.id );
       notifications.push( threadNotification );
     }
-    const notification: Notification = new Notification( notifications );
 
-    return notification;
+    return notifications;
+  }
+
+  async getNotifications( groupId: number, threadId: number ): Promise<ThreadNotification> {
+    const messages: Message[] = await this.getMessagesById( groupId, threadId );
+    const strippedDownMessages: StrippedDownMessage[] = this.getStrippedDownMessages( messages );
+    const threadNotification: ThreadNotification = new ThreadNotification(threadId, strippedDownMessages, false );
+
+    return threadNotification;
   }
 
   private getStrippedDownMessages( messages: Message[] ): StrippedDownMessage[] {

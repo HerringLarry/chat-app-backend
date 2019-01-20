@@ -78,3 +78,11 @@ export class QueryForDMThreadsAssociatedWithGroupAndUser {
         this.groupId = group.id;
     }
 }
+
+export class QueryForThreadsByGroup {
+    groupId: number;
+
+    constructor( groupId: number ) {
+        this.groupId = groupId;
+    }
+}

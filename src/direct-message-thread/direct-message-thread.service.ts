@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { DirectMessageThread } from './direct-message-thread.entity';
 import { DMThreadCreationDto } from './dto/direct-message-thread-creation.dto';
-import { DMThreadObject, Query, QueryForDMThreadsAssociatedWithGroupAndUser, QueryForThreadWithUsers as QueryForThreadWithUsers, QueryForThreadWithId as QueryForThreadWithId, DMThreadWithUsernames } from './helpers/helpers';
+import { DMThreadObject, Query, QueryForDMThreadsAssociatedWithGroupAndUser, QueryForThreadWithUsers as QueryForThreadWithUsers, QueryForThreadWithId as QueryForThreadWithId, DMThreadWithUsernames, QueryForThreadsByGroup } from './helpers/helpers';
 import { Group } from '../groups/group.entity';
 import { User } from 'users/user.entity';
 import { MemberService } from 'members/member.service';
@@ -89,5 +89,11 @@ export class DirectMessageThreadService {
     const dMThreadWithUsernames: DMThreadWithUsernames = new DMThreadWithUsernames( users, DMThread.groupId, DMThread.id );
 
     return dMThreadWithUsernames;
+  }
+
+  async getAllThreadsAssociatedWithGroup( groupId: number ): Promise<DirectMessageThread[]> {
+    const queryForThreadsByGroup: QueryForThreadsByGroup = new QueryForThreadsByGroup( groupId );
+
+    return await this.dmThreadRepository.find( queryForThreadsByGroup );
   }
 }

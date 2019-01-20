@@ -11,12 +11,16 @@ import { PassportModule } from '@nestjs/passport';
 import { MessageService } from 'messages/message.service';
 import { MessageModule } from 'messages/message.module';
 import { NotificationsGateway } from './notifications.gateway';
+import { GroupService } from 'groups/group.service';
+import { GroupModule } from 'groups/group.module';
+import { DirectMessageModule } from 'direct-messages/direct-message.module';
+import { DirectMessageService } from 'direct-messages/direct-message.service';
 
 @Module({
-    imports: [ MessageModule,
+    imports: [ MessageModule, GroupModule, UsersModule, DirectMessageModule,
     ],
     providers: [
-        NotificationsService, MessageService, NotificationsGateway,
+        NotificationsService, MessageService, NotificationsGateway, GroupService, UsersService, DirectMessageService,
     ],
     exports: [
         NotificationsService,

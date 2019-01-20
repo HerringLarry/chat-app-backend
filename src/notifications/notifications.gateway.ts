@@ -13,7 +13,12 @@ import { User } from 'users/user.entity';
 import { Group } from 'groups/group.entity';
 import { Member } from 'members/member.entity';
 import { NotificationsService } from './notifications.service';
-import { Notification } from './dto/notification.dto';
+import { NotificationDto, ThreadNotification } from './dto/notification.dto';
+import { MessageService } from 'messages/message.service';
+import { Message } from 'messages/message.entity';
+import { DirectThreadNotification } from 'direct-messages/helpers/helpers';
+import { DirectMessageService } from 'direct-messages/direct-message.service';
+import { DirectMessage } from 'direct-messages/direct-message.entity';
 
 @WebSocketGateway(9997)
   export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -25,6 +30,9 @@ import { Notification } from './dto/notification.dto';
     constructor(
       private _notificationsService: NotificationsService,
       private _usersService: UsersService,
+      private _messageService: MessageService,
+      private _directMessageService: DirectMessageService,
+      private _groupService: GroupService,
     ) {}
 
     async handleConnection(socket) {
@@ -47,13 +55,62 @@ import { Notification } from './dto/notification.dto';
       }
     }
 
+    @SubscribeMessage('markAsRead')
+    async markAsRead(client, data: any){
+      const groupId: number = data.split('/')[0];
+      const threadId: number = data.split('/')[1];
+      console.log(groupId, threadId );
+      const user: User = await this._usersService.getUserById( client.handshake.query.userId);
+      const group: Group = await this._groupService.getGroupById( groupId );
+      const messages: Message[] = await this._messageService.getMessages(group.name, threadId);
+      await this._messageService.addUserIdToMessages(user, messages);
+      const notification: ThreadNotification = await this._notificationsService.getThreadNotifications( groupId, threadId );
+      client.emit(event, notification);
+
+      return Observable.create(observer =>
+          observer.next({ event, data: notification}),
+      );
+    }
+
+    @SubscribeMessage('directMarkAsRead')
+    async directMarkAsRead(client, data: any){
+      const groupId: number = data.split('/')[0];
+      const threadId: number = data.split('/')[1];
+      const user: User = await this._usersService.getUserById( client.handshake.query.userId);
+      const group: Group = await this._groupService.getGroupById( groupId );
+      const directMessages: DirectMessage[] = await this._directMessageService.getMessages(group.name, threadId);
+      await this._directMessageService.addUserIdToMessages(user, directMessages);
+      const notification: ThreadNotification = await this._notificationsService.getDirectThreadNotifications( groupId, threadId );
+
+      client.emit(event, notification);
+
+      return Observable.create(observer =>
+          observer.next({ event, data: notification }),
+      );
+    }
+
     @SubscribeMessage('message')
     async onMessage(client, data: any) { // Add Notifications to non-listed users
         const event: string = 'message';
         const result = data;
+        console.log(result);
         // await this._notificationsService.updateAllNotificationsForThreadInGroup( data.groupId, data.threadId);
-        const notification: Notification = await this._notificationsService.getUserNotifications( result.userId, result.groupId );
-        client.broadcast.to(data.groupId).emit(event, notification);
+        const notification: ThreadNotification = await this._notificationsService.getThreadNotifications( result.groupId, result.threadId );
+        client.broadcast.to(Number(data.groupId)).emit(event, notification);
+
+        return Observable.create(observer =>
+          observer.next({ event, data: notification }),
+      );
+    }
+
+    @SubscribeMessage('directMessage')
+    async onDirectMessage(client, data: any) { // Add Notifications to non-listed users
+        const event: string = 'message';
+        const result = data;
+        // await this._notificationsService.updateAllNotificationsForThreadInGroup( data.groupId, data.threadId);
+        // tslint:disable-next-line:max-line-length
+        const notification: DirectThreadNotification = await this._notificationsService.getDirectThreadNotifications( result.groupId, result.threadId );
+        client.broadcast.to(Number(data.groupId)).emit(event, notification);
 
         return Observable.create(observer =>
           observer.next({ event, data: notification }),
@@ -66,12 +123,14 @@ import { Notification } from './dto/notification.dto';
       const userId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
       client.join(groupId);
-      const notifications: Notification = await this._notificationsService.getUserNotifications( userId, groupId );
+      const threadNotifications: ThreadNotification[] = await this._notificationsService.getAllThreadNotifications( groupId );
+      const directNotifications: DirectThreadNotification[] = await this._notificationsService.getAllDirectThreadNotifications( groupId );
+      const notificationDto: NotificationDto = new NotificationDto( threadNotifications, directNotifications );
       // Send last messages to the connected user
-      client.emit(event, notifications);
+      client.emit(event, notificationDto);
 
       return Observable.create(observer =>
-        observer.next({ event, data: notifications }),
+        observer.next({ event, data: notificationDto }),
     );
     }
 

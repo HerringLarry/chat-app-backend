@@ -41,3 +41,36 @@ export class ResponseObject {
         this.directMessages = directMessages;
     }
 }
+
+export class DirectThreadNotification {
+    threadId: number;
+    strippedDownMessages: StrippedDownDirectMessage[];
+    isDirectThreadNotification: boolean;
+
+    constructor( threadId: number, strippedDownMessages: StrippedDownDirectMessage[], isDirectThreadNotification: boolean ){
+        this.threadId = threadId;
+        this.strippedDownMessages = strippedDownMessages;
+        this.isDirectThreadNotification = isDirectThreadNotification;
+     }
+}
+
+export class StrippedDownDirectMessage{
+    id: number;
+    userIds: number[];
+
+    constructor( message: DirectMessage ) {
+        this.id = message.id;
+        this.userIds = message.userIds;
+    }
+}
+
+export class QueryById {
+    threadId: number;
+    groupId: number;
+
+    constructor( groupId: number, threadId: number ){
+        this.threadId = threadId;
+        this.groupId = groupId;
+    }
+
+}

@@ -32,6 +32,16 @@ export class Query {
     }
 }
 
+export class QueryById {
+    groupId: number;
+    threadId: number;
+
+    constructor( groupId: number, threadId: number ){
+        this.groupId = groupId;
+        this.threadId = threadId;
+    }
+}
+
 export class ResponseObject{
     messages: Message[];
     users: User[];

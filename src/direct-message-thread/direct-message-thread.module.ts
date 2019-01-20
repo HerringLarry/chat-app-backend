@@ -17,5 +17,8 @@ import { UsersService } from 'users/users.service';
     providers: [
         DirectMessageThreadService, GroupService, UsersService,
     ],
+    exports: [
+        DirectMessageThreadService,
+    ],
 })
 export class DirectMessageThreadModule {}

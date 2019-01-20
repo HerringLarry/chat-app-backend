@@ -21,5 +21,8 @@ import { MemberModule } from 'members/member.module';
     providers: [
         MessageService, ThreadService, GroupService, UsersService, MessagesGateway,
     ],
+    exports: [
+        MessageService,
+    ],
 })
 export class MessageModule {}

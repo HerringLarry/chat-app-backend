@@ -60,7 +60,15 @@ export class ThreadService {
         where: {id: In(member.threads)},
       });
 
-      return results;
+      return results.sort( ( a: Thread, b: Thread ) => {
+        if ( a.id > b.id ) {
+          return 1;
+        } else if ( a.id < b.id ){
+          return -1;
+        } else {
+          return 0;
+        }
+      });
     } else {
 
       return [];

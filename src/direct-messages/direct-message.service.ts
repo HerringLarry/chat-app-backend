@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectMessage } from './direct-message.entity';
 import { DirectMessageCreationDto } from './dto/direct-message-creation.dto';
-import { DirectMessageObject, Query } from './helpers/helpers';
+import { DirectMessageObject, Query, StrippedDownDirectMessage, DirectThreadNotification, QueryById } from './helpers/helpers';
 import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
@@ -40,5 +40,71 @@ export class DirectMessageService {
     const results = await this.messageRepository.find(query);
 
     return results;
+  }
+
+  async getMessagesById( groupId: number, threadId: number ): Promise<DirectMessage[]> {
+    const query: QueryById = new QueryById(groupId, threadId);
+
+    const results = await this.messageRepository.find( query );
+
+    return results.sort( (a: DirectMessage, b: DirectMessage ) => {
+      if ( a.createdAt > b.createdAt ) {
+        return 1;
+      } else if ( a.createdAt < b.createdAt ) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  async addUserIdToMessages( user: User, messages: DirectMessage[] ): Promise<void> {
+    for ( const message of messages ) {
+      if ( !this.isUserInUserIds( user, message ) )  {
+        message.userIds.push( user.id );
+        await this.messageRepository.save(message);
+      }
+    }
+  }
+
+  isUserInUserIds( user: User, message: DirectMessage ): boolean {
+    for ( const userId of message.userIds ) {
+      if ( user.id === userId ) {
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async getAllNotifications( groupId: number ): Promise<DirectThreadNotification[]> { // A little complicated, could be simplfiied in future
+    const group: Group = await this._groupService.getGroupById( groupId );
+    const threads: DirectMessageThread[] = await this._directThreadService.getAllThreadsAssociatedWithGroup(group.id);
+    const notifications: DirectThreadNotification[] = [];
+    for ( const thread of threads ){
+      const directThreadNotification: DirectThreadNotification = await this.getNotifications( groupId, thread.id );
+      notifications.push( directThreadNotification );
+    }
+
+    return notifications;
+  }
+
+  async getNotifications( groupId: number, threadId: number ): Promise<DirectThreadNotification> {
+    const messages: DirectMessage[] = await this.getMessagesById( groupId, threadId );
+    const strippedDownMessages: StrippedDownDirectMessage[] = this.getStrippedDownMessages( messages );
+    const threadNotification: DirectThreadNotification = new DirectThreadNotification(threadId, strippedDownMessages, true );
+
+    return threadNotification;
+  }
+
+  private getStrippedDownMessages( messages: DirectMessage[] ): StrippedDownDirectMessage[] {
+    const stripped = [];
+    for ( const message of messages ) {
+      const strippedDownMessage: StrippedDownDirectMessage = new StrippedDownDirectMessage( messages );
+      stripped.push( strippedDownMessage );
+    }
+
+    return stripped;
   }
 }
