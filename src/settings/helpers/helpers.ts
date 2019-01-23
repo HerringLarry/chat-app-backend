@@ -11,9 +11,11 @@ export class Query {
 export class InitializedSettings {
     userId: number;
     showUsername: boolean;
+    showNotifications: boolean;
 
-    constructor( user: User, showUsername: boolean ){
+    constructor( user: User, showUsername: boolean, showNotifications: boolean ){
         this.userId = user.id;
         this.showUsername = showUsername;
+        this.showNotifications = showNotifications;
     }
 }

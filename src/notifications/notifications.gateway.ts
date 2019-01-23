@@ -57,9 +57,9 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
 
     @SubscribeMessage('markAsRead')
     async markAsRead(client, data: any){
+      const event = 'message';
       const groupId: number = data.split('/')[0];
       const threadId: number = data.split('/')[1];
-      console.log(groupId, threadId );
       const user: User = await this._usersService.getUserById( client.handshake.query.userId);
       const group: Group = await this._groupService.getGroupById( groupId );
       const messages: Message[] = await this._messageService.getMessages(group.name, threadId);
@@ -69,7 +69,7 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
       client.emit(event, notificationDto);
 
       return Observable.create(observer =>
-          observer.next({ event, data: notificationDto}),
+          observer.next({ event: event, data: notificationDto}),
       );
     }
 
@@ -84,10 +84,10 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
       const notification: DirectThreadNotification[] = await this._notificationsService.getAllDirectThreadNotifications( groupId );
       const notificationDto: NotificationDto = new NotificationDto(undefined, notification);
 
-      client.emit(event, notificationDto);
+      client.emit('message', notificationDto);
 
       return Observable.create(observer =>
-          observer.next({ event, data: notificationDto }),
+          observer.next({event: 'message', data: notificationDto }),
       );
     }
 
@@ -95,14 +95,13 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
     async onMessage(client, data: any) { // Add Notifications to non-listed users
         const event: string = 'message';
         const result = data;
-        console.log(result);
         // await this._notificationsService.updateAllNotificationsForThreadInGroup( data.groupId, data.threadId);
         const notification: any[] = await this._notificationsService.getAllThreadNotifications( result.groupId );
         const notificationDto: NotificationDto = new NotificationDto(notification, undefined);
         client.broadcast.to(Number(data.groupId)).emit(event, notificationDto);
 
         return Observable.create(observer =>
-          observer.next({ event, data: notificationDto }),
+          observer.next({ event: event, data: notificationDto }),
       );
     }
 
@@ -117,7 +116,7 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
         client.broadcast.to(Number(data.groupId)).emit(event, notificationDto);
 
         return Observable.create(observer =>
-          observer.next({ event, data: notificationDto }),
+          observer.next({ event: event, data: notificationDto }),
       );
     }
 
@@ -130,7 +129,7 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
       const threadNotifications: ThreadNotification[] = await this._notificationsService.getAllThreadNotifications( groupId );
       const directNotifications: DirectThreadNotification[] = await this._notificationsService.getAllDirectThreadNotifications( groupId );
       const notificationDto: NotificationDto = new NotificationDto( threadNotifications, directNotifications );
-      // Send last messages to the connected user
+      // Send last messages to the connected use
       client.emit(event, notificationDto);
 
       return Observable.create(observer =>

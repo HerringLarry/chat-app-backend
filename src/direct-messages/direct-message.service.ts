@@ -101,7 +101,7 @@ export class DirectMessageService {
   private getStrippedDownMessages( messages: DirectMessage[] ): StrippedDownDirectMessage[] {
     const stripped = [];
     for ( const message of messages ) {
-      const strippedDownMessage: StrippedDownDirectMessage = new StrippedDownDirectMessage( messages );
+      const strippedDownMessage: StrippedDownDirectMessage = new StrippedDownDirectMessage( message );
       stripped.push( strippedDownMessage );
     }
 

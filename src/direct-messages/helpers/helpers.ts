@@ -12,6 +12,7 @@ export class DirectMessageObject {
     dmThreadId: number;
     text: string;
     username: string;
+    userIds: number[];
 
     constructor( messageCreationDto: DirectMessageCreationDto, group: Group, dmThread: DMThreadWithUsernames, user: User ){
         this.text = messageCreationDto.text;
@@ -19,6 +20,7 @@ export class DirectMessageObject {
         this.dmThreadId = dmThread.id;
         this.userId = user.id;
         this.username = messageCreationDto.username;
+        this.userIds = [user.id];
     }
 }
 
@@ -65,11 +67,11 @@ export class StrippedDownDirectMessage{
 }
 
 export class QueryById {
-    threadId: number;
+    dmThreadId: number;
     groupId: number;
 
     constructor( groupId: number, threadId: number ){
-        this.threadId = threadId;
+        this.dmThreadId = threadId;
         this.groupId = groupId;
     }
 
