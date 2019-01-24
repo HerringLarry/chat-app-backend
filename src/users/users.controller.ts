@@ -9,11 +9,19 @@ export class UsersController {
 
     @Get('/:username/:password')
     async checkIfUserExists(@Param('username') username: string, @Param('password') password: string ) {
+
         return await this._usersService.checkIfUserExists( username, password );
     }
 
     @Get('/getAllUsers')
     async getAllUsers() {
+
         return await this._usersService.getAllUsers();
+    }
+
+    @Get('/nameLike/:searchTerm')
+    async getUsersWithNameLike( @Param('searchTerm') searchTerm: string ) {
+
+        return await this._usersService.findUsersWithNameLike( searchTerm );
     }
 }

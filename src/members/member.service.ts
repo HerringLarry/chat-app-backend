@@ -66,7 +66,7 @@ export class MemberService {
   }
 
   async getAllMembersInGroup( group: Group ): Promise<Member[]>{
-    const queryForAllUsersInGroup: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( group );
+    const queryForAllUsersInGroup: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( group.id );
     return await this.memberRepository.find(queryForAllUsersInGroup);
   }
 
@@ -76,5 +76,21 @@ export class MemberService {
       member.threads.push(thread.id);
       await this.memberRepository.save(member);
     }
+  }
+
+  async findMembersWithNameLike( searchTerm: string, groupId: number ): Promise<User[]>  {
+    const query: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( groupId );
+    const members: Member[] = await this.memberRepository.find(query);
+    const userIds: number[] = this.putAllUserIdsInASingleArray( members );
+    return await this._usersService.findUsersWithNameLikeAndInGroup( searchTerm, userIds );
+  }
+
+  private putAllUserIdsInASingleArray( members: Member[] ): number[] {
+    const userIds = [];
+    members.forEach( member => {
+      userIds.push(member.userId);
+    });
+
+    return userIds;
   }
 }

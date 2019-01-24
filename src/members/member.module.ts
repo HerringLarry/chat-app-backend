@@ -6,9 +6,13 @@ import { UsersService } from '../users/users.service';
 import { UsersModule } from '../users/users.module';
 import { GroupModule } from 'groups/group.module';
 import { GroupService } from 'groups/group.service';
+import { MemberController } from './member.controller';
 
 @Module({
     imports: [ TypeOrmModule.forFeature([Member]), UsersModule,
+    ],
+    controllers: [
+        MemberController,
     ],
     providers: [
         MemberService, UsersService,

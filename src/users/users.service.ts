@@ -80,4 +80,18 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  async findUsersWithNameLike( searchTerm: string ): Promise<User[]> {
+    return await this.userRepository
+      .createQueryBuilder('User')
+      .where('user.username like :name', {name: '%' + searchTerm + '%' })
+      .getMany();
+  }
+
+  async findUsersWithNameLikeAndInGroup( searchTerm: string, userIds: number[] ): Promise<User[]> {
+    return await this.userRepository
+      .createQueryBuilder('User')
+      .where('user.username LIKE :name AND user.id IN (:...ids)', { name: '%' + searchTerm + '%', ids: userIds })
+      .getMany();
+  }
+
 }

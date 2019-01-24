@@ -38,8 +38,8 @@ export class QueryForSpecificMember{
 
 export class QueryForAllUsersInGroup{
     groupId: number;
-    constructor( group: Group ){
-        this.groupId = group.id;
+    constructor( groupId: number ){
+        this.groupId = groupId;
     }
 }
 
