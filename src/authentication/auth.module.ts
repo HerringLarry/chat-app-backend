@@ -15,6 +15,7 @@ import { InvitesController } from 'invites/invites.controller';
 import { ThreadController } from 'threads/thread.controller';
 import { MessageController } from 'messages/message.controller';
 import { SettingsModule } from 'settings/settings.module';
+import { MemberController } from 'members/member.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ export class AuthModule {
           .apply(passport.authenticate('jwt', { session: false }))
           .forRoutes(
             GroupController, DirectMessageController, DirectMessageThreadController, MessageController,
-            ThreadController, UsersController, InvitesController,
+            ThreadController, UsersController, InvitesController, MemberController,
             );
     }
 }

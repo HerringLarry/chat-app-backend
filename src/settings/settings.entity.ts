@@ -9,4 +9,6 @@ export class Settings {
   @Column() showUsername: boolean; // if false then shows full name
 
   @Column({nullable: true}) showNotifications: boolean;
+
+  @Column({nullable: true}) showTime: boolean;
 }

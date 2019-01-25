@@ -25,8 +25,10 @@ export class SettingsService {
   }
 
   async initializeUserSettings( user: User ): Promise<boolean> {
-    const initializedSettings: InitializedSettings = new InitializedSettings( user, true, true );
+    const initializedSettings: InitializedSettings = new InitializedSettings( user, true, true, true );
+    console.log(initializedSettings);
     const results = await this.settingsRepository.save( initializedSettings );
+    console.log(results);
 
     return results ? true : false;
   }
