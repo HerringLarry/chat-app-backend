@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import {  Invite } from './invites.entity';
-import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite, QueryForInviteByUserAndGroupId } from './helpers/helpers';
+import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite, QueryForInviteByUserAndGroupId, QueryByGroupId } from './helpers/helpers';
 import { Member } from 'members/member.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
 import { UsersService } from 'users/users.service';
@@ -94,15 +94,30 @@ export class InvitesService {
     return await this.inviteRepository.findOne(query);
   }
 
-  async getListOfRelevantUsers( groupName: string, username: string ): Promise<User[]> {
-    let users: User[] = await this._usersService.getAllUsers();
-    const usersCopy: User[] = users.slice(); // copy users
-    const group: Group = await this._groupService.getGroup( groupName );
-    if ( users.length > 0 && group !== undefined ) {
-      users = await this.removeUsersFromArrayThatAreAlreadyInvitedOrInGroup( users, usersCopy, group );
-    }
+  async getListOfRelevantUsers( term: string, groupId: number): Promise<User[]> {
+    const invites: Invite[] = await this.getAllInvitesForGroup( groupId );
+    const members: Member[] = await this._memberService.getAllMembersInGroupByGroupId(groupId);
+    const userIds: number[] = this.consolidateUserIds( invites, members );
 
-    return users;
+    return await this._usersService.findUsersWithNameLikeAndNotInUserIds(term, userIds);
+  }
+
+  async getAllInvitesForGroup( groupId ): Promise<Invite[]> {
+    const queryByGroupId = new QueryByGroupId( groupId );
+
+    return await this.inviteRepository.find(queryByGroupId);
+  }
+
+  private consolidateUserIds( invites: Invite[], members: Member[] ): number[] {
+    const userIds: number[] = [];
+    invites.forEach( invite => {
+      userIds.push( invite.toUserId );
+    });
+    members.forEach( member => {
+      userIds.push( member.userId );
+    });
+
+    return userIds;
   }
 
   async removeUsersFromArrayThatAreAlreadyInvitedOrInGroup( users: User[], usersCopy: User[], group: Group ): Promise<User[]> {

@@ -9,7 +9,9 @@ export class MemberController {
     @Get('/:searchTerm/:groupId')
     async searchForMembers( @Param('searchTerm') searchTerm: string, @Param('groupId') groupId: number ) {
 
-        return await this._memberService.findMembersWithNameLike( searchTerm, groupId );
+        const results = await this._memberService.findMembersWithNameLike( searchTerm, groupId );
+
+        return results;
     }
 
 }

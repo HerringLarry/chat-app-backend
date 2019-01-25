@@ -66,3 +66,11 @@ export class QueryForInviteByUserAndGroupId{
         this.groupId = groupId;
     }
 }
+
+export class QueryByGroupId{
+    groupId: number;
+
+    constructor( groupId: number ){
+        this.groupId = groupId;
+    }
+}

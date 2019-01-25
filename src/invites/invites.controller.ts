@@ -25,8 +25,8 @@ export class InvitesController {
         await this._invitesService.respondToInvite( responseDto );
     }
 
-    @Get('/:groupName/:username')
-    async getListOfUsersThatAreNeitherMembersNorAlreadyInvited( @Param('groupName') groupName: string, @Param('username') username: string) {
-        return await this._invitesService.getListOfRelevantUsers( groupName, username );
+    @Get('/:searchTerm/:groupId')
+    async searchForNonMembersAndNonInvitees( @Param('searchTerm') searchTerm: string, @Param('groupId') groupId: number ) {
+        return await this._invitesService.getListOfRelevantUsers( searchTerm, groupId );
     }
 }

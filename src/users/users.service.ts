@@ -80,17 +80,17 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findUsersWithNameLike( searchTerm: string ): Promise<User[]> {
+  async findUsersWithNameLikeAndNotInUserIds( searchTerm: string, userIds: number[]  ): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('User')
-      .where('user.username like :name', {name: '%' + searchTerm + '%' })
+      .where('user.username LIKE :name AND user.id NOT IN (:...ids)', {name: '%' + searchTerm + '%', ids: userIds })
       .getMany();
   }
 
-  async findUsersWithNameLikeAndInGroup( searchTerm: string, userIds: number[] ): Promise<User[]> {
+  async findUsersWithNameLikeAndInUserIds( searchTerm: string, userIds: number[] ): Promise<User[]> {
     return await this.userRepository
-      .createQueryBuilder('User')
-      .where('user.username LIKE :name AND user.id IN (:...ids)', { name: '%' + searchTerm + '%', ids: userIds })
+      .createQueryBuilder('user')
+      .where('user.username LIKE :name', { name: searchTerm + '%'})
       .getMany();
   }
 

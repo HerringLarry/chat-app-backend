@@ -1,3 +1,4 @@
+import { QueryByGroupId } from './../invites/helpers/helpers';
 import { DirectMessageThread } from './../direct-message-thread/direct-message-thread.entity';
 import { UsersService } from '../users/users.service';
 import { Injectable, Inject } from '@nestjs/common';
@@ -82,7 +83,14 @@ export class MemberService {
     const query: QueryForAllUsersInGroup = new QueryForAllUsersInGroup( groupId );
     const members: Member[] = await this.memberRepository.find(query);
     const userIds: number[] = this.putAllUserIdsInASingleArray( members );
-    return await this._usersService.findUsersWithNameLikeAndInGroup( searchTerm, userIds );
+    const results = await this._usersService.findUsersWithNameLikeAndInUserIds( searchTerm, userIds );
+    return results;
+  }
+
+  async getAllMembersInGroupByGroupId( groupId: number ): Promise<Member[]> {
+    const query = new QueryByGroupId( groupId );
+
+    return await this.memberRepository.find( query );
   }
 
   private putAllUserIdsInASingleArray( members: Member[] ): number[] {
