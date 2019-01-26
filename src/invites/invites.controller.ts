@@ -4,6 +4,7 @@ import { Invite } from './invites.entity';
 import { InviteDto } from './dto/invites.dto';
 import { ResponseDto } from './dto/response.dto';
 import { ModifiedInviteDto } from './helpers/helpers';
+import { MultiInviteDto } from './dto/multi-invite.dto';
 
 @Controller('invites')
 export class InvitesController {
@@ -16,8 +17,8 @@ export class InvitesController {
     }
 
     @Post('/invite')
-    async createInvite(@Body() inviteDto: ModifiedInviteDto ): Promise<void> {
-        await this._invitesService.createInvite( inviteDto );
+    async createInvite(@Body() multiInviteDto: MultiInviteDto ): Promise<void> {
+        await this._invitesService.createInvites( multiInviteDto );
     }
 
     @Post('/respond')

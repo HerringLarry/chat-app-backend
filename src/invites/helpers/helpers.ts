@@ -23,6 +23,18 @@ export class InviteObject{
     }
 }
 
+export class InviteObjectAlt{
+    fromUserId: number;
+    toUserId: number;
+    groupId: number;
+
+    constructor( fromUserId: number, toUserId: number, groupId: number ){
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.groupId = groupId;
+    }
+}
+
 export class QueryForInviteById{
     id: number;
 

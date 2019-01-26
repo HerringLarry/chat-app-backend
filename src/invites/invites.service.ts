@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import {  Invite } from './invites.entity';
-import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite, QueryForInviteByUserAndGroupId, QueryByGroupId } from './helpers/helpers';
+import { QueryForInvites, InviteObject, QueryForInviteById, ModifiedInviteDto, AlteredInvite, QueryForInviteByUserAndGroupId, QueryByGroupId, InviteObjectAlt } from './helpers/helpers';
 import { Member } from 'members/member.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
 import { UsersService } from 'users/users.service';
@@ -15,6 +15,7 @@ import { ResponseDto } from './dto/response.dto';
 import { MemberService } from 'members/member.service';
 import { ThreadService } from 'threads/thread.service';
 import { Thread } from 'threads/thread.entity';
+import { MultiInviteDto } from './dto/multi-invite.dto';
 
 @Injectable()
 export class InvitesService {
@@ -47,24 +48,15 @@ export class InvitesService {
     return altered;
   }
 
-  async createMultipleInvites( inviteDto: InviteDto ): Promise<void> {
-    for ( const username of inviteDto.toUsers ){
-      const modifiedInviteDto: ModifiedInviteDto = new ModifiedInviteDto( inviteDto, username );
-      await this.createInvite( modifiedInviteDto );
+  async createInvites( multiInviteDto: MultiInviteDto ): Promise<void> {
+    for ( const userId of multiInviteDto.toUserIds ) {
+      await this.createInvite( multiInviteDto.fromUserId, userId, multiInviteDto.groupId );
     }
   }
 
-  async createInvite( modifiedInviteDto: ModifiedInviteDto ): Promise<void> {
-    const toUser: User = await this._usersService.getUser( modifiedInviteDto.toUser );
-    const fromUser: User = await this._usersService.getUser( modifiedInviteDto.fromUser );
-    const group: Group = await this._groupService.getGroup( modifiedInviteDto.groupName );
-    if ( fromUser !== undefined && toUser !== undefined && group !== undefined ) {
-      const invite: InviteObject = new InviteObject( fromUser, toUser, group );
-      await this.inviteRepository.save( invite );
-    } else {
-
-      return;
-    }
+  async createInvite( fromUserId: number, toUserId: number, groupId: number ): Promise<void> {
+    const invite: InviteObjectAlt = new InviteObjectAlt( fromUserId, toUserId, groupId );
+    await this.inviteRepository.save( invite );
   }
 
   async respondToInvite( responseDto: ResponseDto ){
