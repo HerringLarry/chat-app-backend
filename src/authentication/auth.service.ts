@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 import { User } from 'users/user.entity';
 
 @Injectable()

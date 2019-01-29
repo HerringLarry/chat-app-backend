@@ -91,14 +91,14 @@ export class MessageService {
     const threads: Thread[] = await this._threadService.getAllThreadsAssociatedWithGroup(group);
     const notifications: ThreadNotification[] = [];
     for ( const thread of threads ){
-      const threadNotification: ThreadNotification = await this.getNotifications( groupId, thread.id );
+      const threadNotification: ThreadNotification = await this.getThreadNotifications( groupId, thread.id );
       notifications.push( threadNotification );
     }
 
     return notifications;
   }
 
-  async getNotifications( groupId: number, threadId: number ): Promise<ThreadNotification> {
+  async getThreadNotifications( groupId: number, threadId: number ): Promise<ThreadNotification> {
     const messages: Message[] = await this.getMessagesById( groupId, threadId );
     const strippedDownMessages: StrippedDownMessage[] = this.getStrippedDownMessages( messages );
     const threadNotification: ThreadNotification = new ThreadNotification(threadId, strippedDownMessages, false );

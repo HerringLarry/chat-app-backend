@@ -33,25 +33,25 @@ import { Message } from './message.entity';
       ) {}
 
     async handleConnection(socket) {
-        const user: User​​ = await this.usersService.getUser( socket.handshake.query.username);
-        this.connectedUsers = [...this.connectedUsers, String(user.id)];
-        // Send list of connected users
-        this.server.emit('users', this.connectedUsers);
+        // const user: User​​ = await this.usersService.getUser( socket.handshake.query.username);
+        // this.connectedUsers = [...this.connectedUsers, String(user.id)];
+        // // Send list of connected users
+        // this.server.emit('users', this.connectedUsers);
 
     }
 
     async handleDisconnect(socket) {
-      const user: User = await this.usersService.getUser( socket.handshake.query.username );
-      const userPos = this.connectedUsers.indexOf(String(user.id));
+      // const user: User = await this.usersService.getUser( socket.handshake.query.username );
+      // const userPos = this.connectedUsers.indexOf(String(user.id));
 
-      if (userPos > -1) {
-        this.connectedUsers = [
-          ...this.connectedUsers.slice(0, userPos),
-          ...this.connectedUsers.slice(userPos + 1),
-        ];
-        // Sends the new list of connected users
-        this.server.emit('users', this.connectedUsers);
-      }
+      // if (userPos > -1) {
+      //   this.connectedUsers = [
+      //     ...this.connectedUsers.slice(0, userPos),
+      //     ...this.connectedUsers.slice(userPos + 1),
+      //   ];
+      //   // Sends the new list of connected users
+      //   this.server.emit('users', this.connectedUsers);
+      // }
     }
 
     @SubscribeMessage('message')
@@ -69,11 +69,12 @@ import { Message } from './message.entity';
 
     @SubscribeMessage('join')
     async onRoomJoin(client, data: any): Promise<any> { // Reset notifications and reset client username on frontend
-      client.join(data);
       const event: string = 'message';
       const threadId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
-      const user: User = await this.usersService.getUser( client.handshake.query.username );
+      client.join(threadId + '/' + groupId);
+      const userId: number = data.split('/')[2];
+      const user: User = await this.usersService.getUserById( userId );
       const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
       await this.messagesService.addUserIdToMessages( user, responseObject.messages );
       // Send last messages to the connected user
@@ -88,13 +89,13 @@ import { Message } from './message.entity';
     async onRoomLeave(client, data: any) {
       const threadId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
-      const user: User = await this.usersService.getUser( client.handshake.query.username );
-      client.leave(data);
+      const userId: number = data.split('/')[2];
+      client.leave(threadId + '/' + groupId);
     }
 
     async getResponseObject( groupId: number, threadId: number ): Promise<ResponseObject> {
       const group: Group = await this.groupService.getGroupById( groupId );
-      const messages = await this.messagesService.getMessages(group.name, threadId);
+      const messages = await this.messagesService.getMessagesById(groupId, threadId);
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
       const responseObject: ResponseObject = new ResponseObject( messages, users );

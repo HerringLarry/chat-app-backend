@@ -8,9 +8,12 @@ import { Query, UserExistsQuery, QueryForUsersFromMembers, QueryById } from './h
 import { Member } from 'members/member.entity';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
 import { SettingsService } from 'settings/settings.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+
+  saltRounds = 10;
 
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -18,9 +21,11 @@ export class UsersService {
   ){}
 
   async checkIfUserExists( username: string, password: string ): Promise<boolean> {
-    const query: UserExistsQuery = new UserExistsQuery( username, password );
-    const result: any = await this.userRepository.findOne( query );
-    return result ? true : false;
+    const user = await this.getUser( username );
+    if ( user ) {
+      return await this.compareHash( password, user.password );
+    }
+    return false;
   }
 
   async getUser( username: string ): Promise<User> {
@@ -45,15 +50,25 @@ export class UsersService {
     }
   }
 
+  async compareHash(password: string|undefined, hash: string|undefined): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
+
   async createUser( userInfoDto: UserInfoDto ): Promise<boolean> {
     const result: User = await this.getUser( userInfoDto.username );
     if ( !result ){
+      const hashedPassword = await this.getHash( userInfoDto.password );
+      userInfoDto.password = hashedPassword;
       const resultOfCreation: any = await this.userRepository.save(userInfoDto);
       const user: User = await this.getUser( userInfoDto.username );
       const createdSettings: any = await this._settingsService.initializeUserSettings( user );
       return user && createdSettings;
     }
     return false;
+  }
+
+  async getHash(password: string|undefined): Promise<string> {
+    return bcrypt.hash(password, this.saltRounds);
   }
 
   async getUsersByMembership( members: Member[] ): Promise<User[]> { // need to filter out user making request
@@ -83,14 +98,16 @@ export class UsersService {
   async findUsersWithNameLikeAndNotInUserIds( searchTerm: string, userIds: number[]  ): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username LIKE :name AND user.id NOT IN (:...ids)', {name: searchTerm + '%', ids: userIds })
+      // tslint:disable-next-line:max-line-length
+      .where('user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name AND user.id NOT IN (:...ids)', {name: searchTerm + '%', ids: userIds })
       .getMany();
   }
 
   async findUsersWithNameLikeAndInUserIds( searchTerm: string, userIds: number[] ): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username LIKE :name AND user.id IN (:...ids)', { name: searchTerm + '%', ids: userIds})
+      // tslint:disable-next-line:max-line-length
+      .where('user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name AND user.id IN (:...ids)', { name: searchTerm + '%', ids: userIds})
       .getMany();
   }
 

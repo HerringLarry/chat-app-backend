@@ -24,11 +24,11 @@ export class NotificationsService {
   }
 
   async getThreadNotifications( groupId: number, threadId: number ): Promise<ThreadNotification> {
-    return await this._messageService.getNotifications( groupId, threadId );
+    return await this._messageService.getThreadNotifications( groupId, threadId );
   }
 
   async getDirectThreadNotifications( groupId: number, threadId: number ): Promise<ThreadNotification> {
-    return await this._directMessageService.getNotifications( groupId, threadId );
+    return await this._directMessageService.getThreadNotifications( groupId, threadId );
   }
 
 }

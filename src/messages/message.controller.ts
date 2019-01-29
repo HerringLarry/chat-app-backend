@@ -19,6 +19,6 @@ export class MessageController {
 
     @Get('notifications/:groupId/:userId')
     async getUserNotifications( @Param('groupId') groupId: number, @Param('userId') userId: number ) {
-        return await this._messageService.getNotifications( userId, groupId );
+        return await this._messageService.getThreadNotifications( userId, groupId );
     }
 }

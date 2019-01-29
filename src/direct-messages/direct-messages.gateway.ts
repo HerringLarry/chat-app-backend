@@ -56,9 +56,9 @@ import { ResponseObject } from './helpers/helpers';
         const event: string = 'message';
         const result = data;
         await this.directMessagesService.createMessage(result);
-        const responseObject: ResponseObject = await this.getResponseObject( data.groupName, data.threadId );
+        const responseObject: ResponseObject = await this.getResponseObject( data.groupId, data.threadId );
 
-        client.broadcast.to( data.threadId + '/' + data.groupName ).emit(event, responseObject);
+        client.broadcast.to( data.threadId + '/' + data.groupId ).emit(event, responseObject);
         return Observable.create(observer =>
           observer.next({ event, data: responseObject }),
       );
@@ -66,13 +66,15 @@ import { ResponseObject } from './helpers/helpers';
 
     @SubscribeMessage('join')
     async onRoomJoin(client, data: any): Promise<any> {
-      client.join(data);
       const event: string = 'message';
       const threadId: number = Number(data.split('/')[0]);
-      const groupName: string = String(data.split('/')[1]);
-      const messages = await this.directMessagesService.getMessages(groupName, threadId);
+      const groupId: number = Number(data.split('/')[1]);
+      client.join(threadId + '/' + groupId);
+      const userId: number = data.split('/')[2];
+      const user: User = await this.usersService.getUserById( userId );
       // Send last messages to the connected user
-      const responseObject: ResponseObject = await this.getResponseObject( groupName, threadId );
+      const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
+      await this.directMessagesService.addUserIdToMessages( user, responseObject.directMessages );
       client.emit(event, responseObject);
 
       return Observable.create(observer =>
@@ -85,9 +87,9 @@ import { ResponseObject } from './helpers/helpers';
       client.leave(data);
     }
 
-    async getResponseObject( groupName: string, threadId: number ): Promise<ResponseObject> {
-      const messages = await this.directMessagesService.getMessages(groupName, threadId);
-      const group: Group = await this.groupService.getGroup( groupName );
+    async getResponseObject( groupId: number, threadId: number ): Promise<ResponseObject> {
+      const messages = await this.directMessagesService.getMessagesById(groupId, threadId);
+      const group: Group = await this.groupService.getGroupById( groupId );
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
       const responseObject: ResponseObject = new ResponseObject( users, messages );

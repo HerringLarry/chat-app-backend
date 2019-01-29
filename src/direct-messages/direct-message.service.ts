@@ -83,14 +83,14 @@ export class DirectMessageService {
     const threads: DirectMessageThread[] = await this._directThreadService.getAllThreadsAssociatedWithGroup(group.id);
     const notifications: DirectThreadNotification[] = [];
     for ( const thread of threads ){
-      const directThreadNotification: DirectThreadNotification = await this.getNotifications( groupId, thread.id );
+      const directThreadNotification: DirectThreadNotification = await this.getThreadNotifications( groupId, thread.id );
       notifications.push( directThreadNotification );
     }
 
     return notifications;
   }
 
-  async getNotifications( groupId: number, threadId: number ): Promise<DirectThreadNotification> {
+  async getThreadNotifications( groupId: number, threadId: number ): Promise<DirectThreadNotification> {
     const messages: DirectMessage[] = await this.getMessagesById( groupId, threadId );
     const strippedDownMessages: StrippedDownDirectMessage[] = this.getStrippedDownMessages( messages );
     const threadNotification: DirectThreadNotification = new DirectThreadNotification(threadId, strippedDownMessages, true );
