@@ -96,18 +96,18 @@ export class UsersService {
   }
 
   async findUsersWithNameLikeAndNotInUserIds( searchTerm: string, userIds: number[]  ): Promise<User[]> {
+    const sqlWhereConditions = '( user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name ) AND user.id NOT IN (:...ids)';
     return await this.userRepository
       .createQueryBuilder('user')
-      // tslint:disable-next-line:max-line-length
-      .where('user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name AND user.id NOT IN (:...ids)', {name: searchTerm + '%', ids: userIds })
+      .where(sqlWhereConditions, {name: searchTerm + '%', ids: userIds })
       .getMany();
   }
 
   async findUsersWithNameLikeAndInUserIds( searchTerm: string, userIds: number[] ): Promise<User[]> {
+    const sqlWhereConditions = '( user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name ) AND user.id IN (:...ids)';
     return await this.userRepository
       .createQueryBuilder('user')
-      // tslint:disable-next-line:max-line-length
-      .where('user.username LIKE :name Or user.firstName LIKE :name OR user.lastName LIKE :name AND user.id IN (:...ids)', { name: searchTerm + '%', ids: userIds})
+      .where(sqlWhereConditions, { name: searchTerm + '%', ids: userIds})
       .getMany();
   }
 

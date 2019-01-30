@@ -58,8 +58,8 @@ import { Message } from './message.entity';
     async onMessage(client, data: any) { // Add Notifications to non-listed users
         const event: string = 'message';
         const result = data;
-        await this.messagesService.createMessage(result);
-        const responseObject: ResponseObject = await this.getResponseObject( data.groupId, data.threadId);
+        const msg = await this.messagesService.createMessage(result);
+        const responseObject: ResponseObject = await this.getOnMessageResponseObject( msg, data.groupId, data.threadId);
         client.broadcast.to(data.threadId + '/' + data.groupId).emit(event, responseObject);
 
         return Observable.create(observer =>

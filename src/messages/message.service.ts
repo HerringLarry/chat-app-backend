@@ -23,14 +23,14 @@ export class MessageService {
               private _userService: UsersService,
   ){}
 
-  async createMessage( messageCreationDto: MessageCreationDto ): Promise<boolean> {
+  async createMessage( messageCreationDto: MessageCreationDto ): Promise<MessageObject> {
     const group: Group = await this._groupService.getGroup( messageCreationDto.groupName );
     const thread: Thread = await this._threadService.getThread( messageCreationDto.threadId, messageCreationDto.groupName );
     const user: User = await this._userService.getUser( messageCreationDto.username );
     const messageObject: MessageObject = new MessageObject( messageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
 
-    return results ? true : false;
+    return results;
   }
 
   async getMessages( groupName: string, threadId: number ): Promise<Message[]> {
