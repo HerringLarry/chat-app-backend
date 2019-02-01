@@ -51,3 +51,12 @@ export class ResponseObject{
         this.users = users;
     }
 }
+
+export class OnMessageResponse{
+    message: Message;
+    users: User[];
+    constructor( message: Message, users: User[] ) {
+        this.message = message;
+        this.users = users;
+    }
+}

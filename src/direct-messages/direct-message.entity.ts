@@ -7,7 +7,7 @@ export class DirectMessage {
 
   @Column() groupId: number;
 
-  @Column() dmThreadId: number;
+  @Column() threadId: number;
 
   @Column() userId: number;
 

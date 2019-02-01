@@ -23,13 +23,13 @@ export class DirectMessageService {
               private _userService: UsersService,
   ){}
 
-  async createMessage( dmMessageCreationDto: DirectMessageCreationDto ): Promise<boolean> {
+  async createMessage( dmMessageCreationDto: DirectMessageCreationDto ): Promise<DirectMessageObject> {
     const group: Group = await this._groupService.getGroup( dmMessageCreationDto.groupName );
     const thread: DMThreadWithUsernames = await this._directThreadService.getThreadWithId( dmMessageCreationDto.threadId, group );
     const user: User = await this._userService.getUser( dmMessageCreationDto.username );
     const messageObject: DirectMessageObject = new DirectMessageObject( dmMessageCreationDto, group, thread, user );
     const results = await this.messageRepository.save( messageObject );
-    return results ? true : false;
+    return results;
   }
 
   async getMessages( groupName: string, threadId: number ): Promise<DirectMessage[]> {

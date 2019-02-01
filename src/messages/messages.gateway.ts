@@ -14,7 +14,7 @@ import { MessageService } from './message.service';
 import { MemberService } from 'members/member.service';
 import { Group } from 'groups/group.entity';
 import { Member } from 'members/member.entity';
-import { ResponseObject } from './helpers/helpers';
+import { ResponseObject, OnMessageResponse } from './helpers/helpers';
 import { NotificationsService } from 'notifications/notifications.service';
 import { Message } from './message.entity';
 
@@ -59,17 +59,17 @@ import { Message } from './message.entity';
         const event: string = 'message';
         const result = data;
         const msg = await this.messagesService.createMessage(result);
-        const responseObject: ResponseObject = await this.getOnMessageResponseObject( msg, data.groupId, data.threadId);
-        client.broadcast.to(data.threadId + '/' + data.groupId).emit(event, responseObject);
+        const onMessageResponse: OnMessageResponse = await this.getOnMessageResponseObject( data.groupId, data.threadId, msg);
+        client.broadcast.to(data.threadId + '/' + data.groupId).emit(event, onMessageResponse);
 
         return Observable.create(observer =>
-          observer.next({ event, data: responseObject }),
+          observer.next({ event, data: onMessageResponse }),
       );
     }
 
     @SubscribeMessage('join')
     async onRoomJoin(client, data: any): Promise<any> { // Reset notifications and reset client username on frontend
-      const event: string = 'message';
+      const event: string = 'join';
       const threadId: number = data.split('/')[0];
       const groupId: number = data.split('/')[1];
       client.join(threadId + '/' + groupId);
@@ -78,7 +78,7 @@ import { Message } from './message.entity';
       const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
       await this.messagesService.addUserIdToMessages( user, responseObject.messages );
       // Send last messages to the connected user
-      client.emit(event, responseObject);
+      // client.emit(event, responseObject);
 
       return Observable.create(observer =>
         observer.next({ event, data: responseObject }),
@@ -101,5 +101,14 @@ import { Message } from './message.entity';
       const responseObject: ResponseObject = new ResponseObject( messages, users );
 
       return responseObject;
+    }
+
+    async getOnMessageResponseObject( groupId: number, threadId: number, message: Message): Promise<OnMessageResponse> {
+      const group: Group = await this.groupService.getGroupById( groupId );
+      const members: Member[] = await this.memberService.getAllMembersInGroup( group );
+      const users: User[] = await this.usersService.getUsersByMembership( members );
+      const onMessageResponse: OnMessageResponse = new OnMessageResponse( message, users );
+
+      return onMessageResponse;
     }
 }

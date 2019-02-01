@@ -15,11 +15,13 @@ import { Member } from 'members/member.entity';
 import { MemberService } from 'members/member.service';
 import { GroupService } from 'groups/group.service';
 import { ResponseObject } from './helpers/helpers';
+import { OnMessageResponse } from 'messages/helpers/helpers';
 
 @WebSocketGateway(9999)
   export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server;
 
+    static maxAmountOfMessages = 42;
     connectedUsers: string[] = [];
 
     constructor(
@@ -55,9 +57,8 @@ import { ResponseObject } from './helpers/helpers';
     async onMessage(client, data: any) {
         const event: string = 'message';
         const result = data;
-        await this.directMessagesService.createMessage(result);
-        const responseObject: ResponseObject = await this.getResponseObject( data.groupId, data.threadId );
-
+        const msg = await this.directMessagesService.createMessage(result);
+        const responseObject: OnMessageResponse = await this.getOnMessageResponseObject( data.groupId, data.threadId, msg );
         client.broadcast.to( data.threadId + '/' + data.groupId ).emit(event, responseObject);
         return Observable.create(observer =>
           observer.next({ event, data: responseObject }),
@@ -66,7 +67,7 @@ import { ResponseObject } from './helpers/helpers';
 
     @SubscribeMessage('join')
     async onRoomJoin(client, data: any): Promise<any> {
-      const event: string = 'message';
+      const event: string = 'join';
       const threadId: number = Number(data.split('/')[0]);
       const groupId: number = Number(data.split('/')[1]);
       client.join(threadId + '/' + groupId);
@@ -74,7 +75,7 @@ import { ResponseObject } from './helpers/helpers';
       const user: User = await this.usersService.getUserById( userId );
       // Send last messages to the connected user
       const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
-      await this.directMessagesService.addUserIdToMessages( user, responseObject.directMessages );
+      await this.directMessagesService.addUserIdToMessages( user, responseObject.messages );
       client.emit(event, responseObject);
 
       return Observable.create(observer =>
@@ -95,6 +96,15 @@ import { ResponseObject } from './helpers/helpers';
       const responseObject: ResponseObject = new ResponseObject( users, messages );
 
       return responseObject;
+    }
+
+    async getOnMessageResponseObject( groupId: number, threadId: number, message: DirectMessage): Promise<OnMessageResponse> {
+      const group: Group = await this.groupService.getGroupById( groupId );
+      const members: Member[] = await this.memberService.getAllMembersInGroup( group );
+      const users: User[] = await this.usersService.getUsersByMembership( members );
+      const onMessageResponse: OnMessageResponse = new OnMessageResponse( message, users );
+
+      return onMessageResponse;
     }
 
 }

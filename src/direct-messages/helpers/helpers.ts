@@ -9,7 +9,7 @@ import { DirectMessage } from 'direct-messages/direct-message.entity';
 export class DirectMessageObject {
     userId: number;
     groupId: number;
-    dmThreadId: number;
+    threadId: number;
     text: string;
     username: string;
     userIds: number[];
@@ -17,7 +17,7 @@ export class DirectMessageObject {
     constructor( messageCreationDto: DirectMessageCreationDto, group: Group, dmThread: DMThreadWithUsernames, user: User ){
         this.text = messageCreationDto.text;
         this.groupId = group.id;
-        this.dmThreadId = dmThread.id;
+        this.threadId = dmThread.id;
         this.userId = user.id;
         this.username = messageCreationDto.username;
         this.userIds = [user.id];
@@ -26,21 +26,21 @@ export class DirectMessageObject {
 
 export class Query {
     groupId: number;
-    dmThreadId: number;
+    threadId: number;
 
     constructor( group: Group, dmThread: DMThreadWithUsernames){
         this.groupId = group.id;
-        this.dmThreadId = dmThread.id;
+        this.threadId = dmThread.id;
     }
 }
 
 export class ResponseObject {
     users: User[];
-    directMessages: DirectMessage[];
+    messages: DirectMessage[];
 
     constructor( users: User[] , directMessages: DirectMessage[] ) {
         this.users = users;
-        this.directMessages = directMessages;
+        this.messages = directMessages;
     }
 }
 
@@ -67,11 +67,11 @@ export class StrippedDownDirectMessage{
 }
 
 export class QueryById {
-    dmThreadId: number;
+    threadId: number;
     groupId: number;
 
     constructor( groupId: number, threadId: number ){
-        this.dmThreadId = threadId;
+        this.threadId = threadId;
         this.groupId = groupId;
     }
 
