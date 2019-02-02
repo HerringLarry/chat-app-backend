@@ -8,14 +8,21 @@ import { GroupObject, Query, QueryForUsersGroups, QueryForGroupById } from './he
 import { User } from 'users/user.entity';
 import { MemberService } from 'members/member.service';
 import { Member } from 'members/member.entity';
+import { ThreadService } from 'threads/thread.service';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class GroupService {
 
+  private _threadService: ThreadService;
+
   constructor(@InjectRepository(Group)
+
   private readonly groupRepository: Repository<Group>,
               private _usersService: UsersService,
               private _memberService: MemberService,
+              private readonly moduleRef: ModuleRef,
+
   ){}
 
   async createGroup( groupCreationDto: GroupCreationDto ): Promise<boolean> {
