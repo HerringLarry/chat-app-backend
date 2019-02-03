@@ -21,4 +21,9 @@ export class MessageController {
     async getUserNotifications( @Param('groupId') groupId: number, @Param('userId') userId: number ) {
         return await this._messageService.getThreadNotifications( userId, groupId );
     }
+
+    @Get('getMessages/:groupName/:threadId/:skipValue')
+    async getLastThirtyMessages( @Param('groupName') groupName: string, @Param('threadId') threadId: number, @Param('skipValue') skipValue: number ) {
+        return await this._messageService.getThirtyMessages( groupName, threadId, skipValue );
+    }
 }

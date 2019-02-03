@@ -45,6 +45,18 @@ export class QueryById {
 export class ResponseObject{
     messages: Message[];
     users: User[];
+    count: number;
+
+    constructor( messages: Message[], users: User[], count: number ) {
+        this.messages = messages;
+        this.users = users;
+        this.count = count;
+    }
+}
+
+export class ResponseObjectWithoutCount{
+    messages: Message[];
+    users: User[];
 
     constructor( messages: Message[], users: User[] ) {
         this.messages = messages;

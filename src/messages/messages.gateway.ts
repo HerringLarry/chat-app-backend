@@ -95,10 +95,11 @@ import { Message } from './message.entity';
 
     async getResponseObject( groupId: number, threadId: number ): Promise<ResponseObject> {
       const group: Group = await this.groupService.getGroupById( groupId );
-      const messages = await this.messagesService.getMessagesById(groupId, threadId);
+      const messages = await this.messagesService.getLastThirtyMessages(group.name, threadId);
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
-      const responseObject: ResponseObject = new ResponseObject( messages, users );
+      const count: number = await this.messagesService.getNumberOfMessages(group.id, threadId);
+      const responseObject: ResponseObject = new ResponseObject( messages, users , count);
 
       return responseObject;
     }

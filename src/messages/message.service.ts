@@ -5,13 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './message.entity';
 import { MessageCreationDto } from './dto/message-creation.dto';
-import { MessageObject, Query, QueryById } from './helpers/helpers';
+import { MessageObject, Query, QueryById, ResponseObjectWithoutCount } from './helpers/helpers';
 import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
 import { ThreadService } from 'threads/thread.service';
 import { Notification, ThreadNotification, StrippedDownMessage } from './dto/notification.dto';
 import { NotificationsService } from 'notifications/notifications.service';
+import { Member } from 'members/member.entity';
+import { MemberService } from 'members/member.service';
 
 @Injectable()
 export class MessageService {
@@ -21,6 +23,7 @@ export class MessageService {
               private _groupService: GroupService,
               private _threadService: ThreadService,
               private _userService: UsersService,
+              private _memberService: MemberService,
   ){}
 
   async createMessage( messageCreationDto: MessageCreationDto ): Promise<MessageObject> {
@@ -31,6 +34,61 @@ export class MessageService {
     const results = await this.messageRepository.save( messageObject );
 
     return results;
+  }
+
+  async getThirtyMessages( groupName: string, threadId: number, skipValue: number ): Promise<ResponseObjectWithoutCount> {
+    const group: Group = await this._groupService.getGroup( groupName );
+    const thread: Thread = await this._threadService.getThread( threadId, groupName );
+    const members: Member[] = await this._memberService.getAllMembersInGroup( group );
+    const users: User[] = await this._userService.getUsersByMembership( members );
+    const sqlWhereConditions = 'message.threadId = :threadId and message.groupId = :groupId';
+
+
+    const messagesPreSorted = await this.messageRepository
+      .createQueryBuilder('message')
+      .orderBy('message.id', 'DESC')
+      .where(sqlWhereConditions, {threadId: threadId, groupId: group.id})
+      .skip(skipValue)
+      .take(30)
+      .getMany();
+
+    const messages = messagesPreSorted.sort( (a: Message, b: Message ) => {
+        if ( a.createdAt > b.createdAt ) {
+          return 1;
+        } else if ( a.createdAt < b.createdAt ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+
+    const response = new ResponseObjectWithoutCount(messages, users);
+
+    return response;
+  }
+
+  async getLastThirtyMessages( groupName: string, threadId: number ): Promise<Message[]> {
+    const group: Group = await this._groupService.getGroup( groupName );
+    const thread: Thread = await this._threadService.getThread( threadId, groupName );
+    const sqlWhereConditions = 'message.threadId = :threadId and message.groupId = :groupId';
+
+    const messages = await this.messageRepository
+      .createQueryBuilder('message')
+      .orderBy('message.id', 'DESC')
+      .where(sqlWhereConditions, {threadId: threadId, groupId: group.id})
+      .skip(0)
+      .take(30)
+      .getMany();
+
+    return messages.sort( (a: Message, b: Message ) => {
+        if ( a.createdAt > b.createdAt ) {
+          return 1;
+        } else if ( a.createdAt < b.createdAt ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
   }
 
   async getMessages( groupName: string, threadId: number ): Promise<Message[]> {
@@ -64,6 +122,12 @@ export class MessageService {
         return 0;
       }
     });
+  }
+
+  async getNumberOfMessages( groupId: number, threadId: number ): Promise<number> {
+    const query: QueryById = new QueryById(groupId, threadId);
+
+    return await this.messageRepository.count(query);
   }
 
   async addUserIdToMessages( user: User, messages: Message[] ): Promise<void> {
