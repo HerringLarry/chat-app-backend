@@ -3,4 +3,5 @@ export class SettingsDto {
     showUsername: boolean;
     showNotifications: boolean;
     showTime: boolean;
+    highlightUsername: boolean;
 }
