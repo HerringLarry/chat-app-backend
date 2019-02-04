@@ -43,7 +43,6 @@ export class MessageService {
     const users: User[] = await this._userService.getUsersByMembership( members );
     const sqlWhereConditions = 'message.threadId = :threadId and message.groupId = :groupId';
 
-
     const messagesPreSorted = await this.messageRepository
       .createQueryBuilder('message')
       .orderBy('message.id', 'DESC')
@@ -62,7 +61,7 @@ export class MessageService {
         }
       });
 
-    const response = new ResponseObjectWithoutCount(messages, users);
+    const response = new ResponseObjectWithoutCount(messages, users, false);
 
     return response;
   }

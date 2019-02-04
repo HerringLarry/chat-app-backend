@@ -99,7 +99,7 @@ import { Message } from './message.entity';
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
       const count: number = await this.messagesService.getNumberOfMessages(group.id, threadId);
-      const responseObject: ResponseObject = new ResponseObject( messages, users , count);
+      const responseObject: ResponseObject = new ResponseObject( messages, users , count, false);
 
       return responseObject;
     }

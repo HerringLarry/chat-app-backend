@@ -1,3 +1,4 @@
+import { MemberService } from 'members/member.service';
 import { UsersService } from 'users/users.service';
 import { GroupService } from '../groups/group.service';
 import { Injectable, Inject } from '@nestjs/common';
@@ -5,13 +6,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectMessage } from './direct-message.entity';
 import { DirectMessageCreationDto } from './dto/direct-message-creation.dto';
-import { DirectMessageObject, Query, StrippedDownDirectMessage, DirectThreadNotification, QueryById } from './helpers/helpers';
+import { DirectMessageObject, Query, StrippedDownDirectMessage, DirectThreadNotification, QueryById, ResponseObjectWithoutCount } from './helpers/helpers';
 import { Group } from 'groups/group.entity';
 import { User } from 'users/user.entity';
 import { Thread } from 'threads/thread.entity';
 import { DirectMessageThreadService } from 'direct-message-thread/direct-message-thread.service';
 import { DirectMessageThread } from 'direct-message-thread/direct-message-thread.entity';
 import { DMThreadWithUsernames } from 'direct-message-thread/helpers/helpers';
+import { Member } from 'members/member.entity';
 
 @Injectable()
 export class DirectMessageService {
@@ -21,6 +23,7 @@ export class DirectMessageService {
               private _groupService: GroupService,
               private _directThreadService: DirectMessageThreadService,
               private _userService: UsersService,
+              private _memberService: MemberService,
   ){}
 
   async createMessage( dmMessageCreationDto: DirectMessageCreationDto ): Promise<DirectMessageObject> {
@@ -40,6 +43,66 @@ export class DirectMessageService {
     const results = await this.messageRepository.find(query);
 
     return results;
+  }
+
+  async getThirtyMessages( groupName: string, threadId: number, skipValue: number ): Promise<ResponseObjectWithoutCount> {
+    const group: Group = await this._groupService.getGroup( groupName );
+    const thread: DMThreadWithUsernames = await this._directThreadService.getThreadWithId( threadId, group );
+    const members: Member[] = await this._memberService.getAllMembersInGroup( group );
+    const users: User[] = await this._userService.getUsersByMembership( members );
+    const sqlWhereConditions = 'message.threadId = :threadId and message.groupId = :groupId';
+
+    const messagesPreSorted = await this.messageRepository
+      .createQueryBuilder('message')
+      .orderBy('message.id', 'DESC')
+      .where(sqlWhereConditions, {threadId: threadId, groupId: group.id})
+      .skip(skipValue)
+      .take(30)
+      .getMany();
+
+    const messages = messagesPreSorted.sort( (a: DirectMessage, b: DirectMessage ) => {
+        if ( a.createdAt > b.createdAt ) {
+          return 1;
+        } else if ( a.createdAt < b.createdAt ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+
+    const response = new ResponseObjectWithoutCount(messages, users, true);
+
+    return response;
+  }
+
+  async getLastThirtyMessages( groupName: string, threadId: number ): Promise<DirectMessage[]> {
+    const group: Group = await this._groupService.getGroup( groupName );
+    const thread: DMThreadWithUsernames = await this._directThreadService.getThreadWithId( threadId, group );
+    const sqlWhereConditions = 'message.threadId = :threadId and message.groupId = :groupId';
+
+    const messages = await this.messageRepository
+      .createQueryBuilder('message')
+      .orderBy('message.id', 'DESC')
+      .where(sqlWhereConditions, {threadId: threadId, groupId: group.id})
+      .skip(0)
+      .take(30)
+      .getMany();
+
+    return messages.sort( (a: DirectMessage, b: DirectMessage ) => {
+        if ( a.createdAt > b.createdAt ) {
+          return 1;
+        } else if ( a.createdAt < b.createdAt ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+  }
+
+  async getNumberOfMessages( groupId: number, threadId: number ): Promise<number> {
+    const query: QueryById = new QueryById(groupId, threadId);
+
+    return await this.messageRepository.count(query);
   }
 
   async getMessagesById( groupId: number, threadId: number ): Promise<DirectMessage[]> {

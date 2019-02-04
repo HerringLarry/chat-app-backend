@@ -46,21 +46,25 @@ export class ResponseObject{
     messages: Message[];
     users: User[];
     count: number;
+    isDirect: boolean;
 
-    constructor( messages: Message[], users: User[], count: number ) {
+    constructor( messages: Message[], users: User[], count: number, isDirect: boolean ) {
         this.messages = messages;
         this.users = users;
         this.count = count;
+        this.isDirect = isDirect;
     }
 }
 
 export class ResponseObjectWithoutCount{
     messages: Message[];
     users: User[];
+    isDirect: boolean;
 
-    constructor( messages: Message[], users: User[] ) {
+    constructor( messages: Message[], users: User[], isDirect: boolean ) {
         this.messages = messages;
         this.users = users;
+        this.isDirect = isDirect;
     }
 }
 

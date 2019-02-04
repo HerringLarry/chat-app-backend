@@ -34,16 +34,6 @@ export class Query {
     }
 }
 
-export class ResponseObject {
-    users: User[];
-    messages: DirectMessage[];
-
-    constructor( users: User[] , directMessages: DirectMessage[] ) {
-        this.users = users;
-        this.messages = directMessages;
-    }
-}
-
 export class DirectThreadNotification {
     threadId: number;
     strippedDownMessages: StrippedDownDirectMessage[];
@@ -75,4 +65,30 @@ export class QueryById {
         this.groupId = groupId;
     }
 
+}
+
+export class ResponseObject{
+    messages: DirectMessage[];
+    users: User[];
+    count: number;
+    isDirect: boolean;
+
+    constructor( messages: DirectMessage[], users: User[], count: number, isDirect: boolean ) {
+        this.messages = messages;
+        this.users = users;
+        this.count = count;
+        this.isDirect = isDirect;
+    }
+}
+
+export class ResponseObjectWithoutCount{
+    messages: DirectMessage[];
+    users: User[];
+    isDirect: boolean;
+
+    constructor( messages: DirectMessage[], users: User[], isDirect: boolean ) {
+        this.messages = messages;
+        this.users = users;
+        this.isDirect = isDirect;
+    }
 }

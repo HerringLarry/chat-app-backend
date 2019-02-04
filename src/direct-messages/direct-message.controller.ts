@@ -16,4 +16,9 @@ export class DirectMessageController {
     async getThreadsMessages(@Param('groupName') groupName: string, @Param('threadId') threadId: number) {
         return await this._directMessageService.getMessages( groupName, threadId );
     }
+
+    @Get('getMessages/:groupName/:threadId/:skipValue')
+    async getLastThirtyMessages( @Param('groupName') groupName: string, @Param('threadId') threadId: number, @Param('skipValue') skipValue: number ) {
+        return await this._directMessageService.getThirtyMessages( groupName, threadId, skipValue );
+    }
 }

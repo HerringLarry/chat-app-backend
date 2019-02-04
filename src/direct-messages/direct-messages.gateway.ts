@@ -16,6 +16,7 @@ import { MemberService } from 'members/member.service';
 import { GroupService } from 'groups/group.service';
 import { ResponseObject } from './helpers/helpers';
 import { OnMessageResponse } from 'messages/helpers/helpers';
+import { DirectMessage } from './direct-message.entity';
 
 @WebSocketGateway(9999)
   export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -76,7 +77,6 @@ import { OnMessageResponse } from 'messages/helpers/helpers';
       // Send last messages to the connected user
       const responseObject: ResponseObject = await this.getResponseObject( groupId, threadId );
       await this.directMessagesService.addUserIdToMessages( user, responseObject.messages );
-      client.emit(event, responseObject);
 
       return Observable.create(observer =>
         observer.next({ event, data: responseObject }),
@@ -89,11 +89,12 @@ import { OnMessageResponse } from 'messages/helpers/helpers';
     }
 
     async getResponseObject( groupId: number, threadId: number ): Promise<ResponseObject> {
-      const messages = await this.directMessagesService.getMessagesById(groupId, threadId);
       const group: Group = await this.groupService.getGroupById( groupId );
+      const messages = await this.directMessagesService.getLastThirtyMessages(group.name, threadId);
       const members: Member[] = await this.memberService.getAllMembersInGroup( group );
       const users: User[] = await this.usersService.getUsersByMembership( members );
-      const responseObject: ResponseObject = new ResponseObject( users, messages );
+      const count: number = await this.directMessagesService.getNumberOfMessages(group.id, threadId);
+      const responseObject: ResponseObject = new ResponseObject( messages, users , count, true);
 
       return responseObject;
     }
