@@ -24,4 +24,5 @@ export class UsersController {
 
         return await this._usersService.findUsersWithNameLike( searchTerm );
     }
+    
 }

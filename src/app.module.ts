@@ -14,6 +14,7 @@ import { MemberModule } from 'members/member.module';
 import { InvitesModule } from 'invites/invites.module';
 import { SettingsModule } from 'settings/settings.module';
 import { MyModule } from 'compression/auth.module';
+import { ProfilePhotoModule } from 'profile-photos/profile-photo.module';
 
 @Module({
   imports: [UsersModule,
@@ -27,6 +28,7 @@ import { MyModule } from 'compression/auth.module';
     InvitesModule,
     SettingsModule,
     NotificationsModule,
+    ProfilePhotoModule,
     MyModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

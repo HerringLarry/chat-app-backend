@@ -111,4 +111,17 @@ export class UsersService {
       .getMany();
   }
 
+  async addProfilePhotoPath( userId: number, path: string ): Promise<void> {
+    const user: User = await this.getUserById(userId);
+    user.photoPath = String(path);
+    console.log('here');
+    await this.userRepository.save( user );
+  }
+
+  async getProfilePhotoPath( userId: number ): Promise<string> {
+    const user: User = await this.getUserById( userId );
+
+    return user.photoPath;
+  }
+
 }

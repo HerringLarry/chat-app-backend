@@ -15,4 +15,10 @@ export class User {
   @Column() mobile: string;
 
   @Column() email: string;
+
+  @Column({
+    nullable: true,
+    default: 'https://static.thenounproject.com/png/630729-200.png',
+  })
+  photoPath: string;
 }
