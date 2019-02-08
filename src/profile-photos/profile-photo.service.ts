@@ -9,6 +9,5 @@ export class ProfilePhotoService {
 
   constructor(
   ){}
-
   
 }

@@ -8,7 +8,7 @@ import { UsersService } from 'users/users.service';
 @Controller('profilephoto')
 export class ProfilePhotoController {
 
-    constructor( private _userService: UsersService, ) {}
+    constructor( private _userService: UsersService ) {}
 
     @Post('/:userId')
     @UseInterceptors(FileInterceptor('file', {
@@ -23,13 +23,11 @@ export class ProfilePhotoController {
         }),
       }))
       async upload( @UploadedFile() file, @Param('userId') userId: number, @Res() res: any) {
-        await this._userService.addProfilePhotoPath( userId, file.filename);
-        console.log(res);
+        return await this._userService.addProfilePhotoPath( userId, file.filename);
     }
 
     @Get('/pic/:photoPath')
     async getPhoto( @Param('photoPath') photoPath: string, @Res() res: any ) {
-        console.log(photoPath);
         return res.sendFile(photoPath, { root: 'uploads' });
     }
 

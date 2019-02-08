@@ -74,3 +74,6 @@ aws/
 
 # Serverless directories
 .serverless
+
+#profile pics
+/Users/williamnewman/chat-app/note-taker-backend/uploads

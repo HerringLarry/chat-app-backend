@@ -114,7 +114,6 @@ export class UsersService {
   async addProfilePhotoPath( userId: number, path: string ): Promise<void> {
     const user: User = await this.getUserById(userId);
     user.photoPath = String(path);
-    console.log('here');
     await this.userRepository.save( user );
   }
 

@@ -24,5 +24,9 @@ export class UsersController {
 
         return await this._usersService.findUsersWithNameLike( searchTerm );
     }
-    
+
+    @Get('/:userId')
+    async getUserById( @Param('userId') userId: number ) {
+        return await this._usersService.getUserById( userId );
+    }
 }
