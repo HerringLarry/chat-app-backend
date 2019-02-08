@@ -12,5 +12,4 @@ export class Settings {
 
   @Column({nullable: true}) showTime: boolean;
 
-  @Column({nullable: true}) highlightUsername: boolean;
 }

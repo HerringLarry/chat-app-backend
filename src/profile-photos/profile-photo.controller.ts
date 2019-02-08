@@ -23,7 +23,8 @@ export class ProfilePhotoController {
         }),
       }))
       async upload( @UploadedFile() file, @Param('userId') userId: number, @Res() res: any) {
-        return await this._userService.addProfilePhotoPath( userId, file.filename);
+        await this._userService.addProfilePhotoPath( userId, file.filename);
+        res.send(true);
     }
 
     @Get('/pic/:photoPath')

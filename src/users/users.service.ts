@@ -123,4 +123,21 @@ export class UsersService {
     return user.photoPath;
   }
 
+  async updateUserById( userId: number, updatedUser: User ): Promise<any> {
+    const user: User = await this.getUserById( userId );
+    const userToBeSaved = this.updateUser( user, updatedUser );
+
+    return await this.userRepository.save( userToBeSaved );
+  }
+
+  private updateUser( user: User, updatedUser: User ): User {
+    user.username = updatedUser.username;
+    user.firstName = updatedUser.firstName;
+    user.lastName = updatedUser.lastName;
+    user.email = updatedUser.email;
+    user.mobile = updatedUser.mobile;
+
+    return user;
+  }
+
 }

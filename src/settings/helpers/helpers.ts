@@ -13,13 +13,11 @@ export class InitializedSettings {
     showUsername: boolean;
     showNotifications: boolean;
     showTime: boolean;
-    highlightUsername: boolean;
 
-    constructor( user: User, showUsername: boolean, showNotifications: boolean, showTime: boolean, highlightUsername: boolean ){
+    constructor( user: User, showUsername: boolean, showNotifications: boolean, showTime: boolean ){
         this.userId = user.id;
         this.showUsername = showUsername;
         this.showNotifications = showNotifications;
         this.showTime = showTime;
-        this.highlightUsername = highlightUsername;
     }
 }

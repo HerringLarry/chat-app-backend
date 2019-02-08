@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserInfoDto } from './dto/user-info.dto';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -19,14 +20,13 @@ export class UsersController {
         return await this._usersService.getAllUsers();
     }
 
-    @Get('/nameLike/:searchTerm')
-    async getUsersWithNameLike( @Param('searchTerm') searchTerm: string ) {
-
-        return await this._usersService.findUsersWithNameLike( searchTerm );
-    }
-
     @Get('/:userId')
     async getUserById( @Param('userId') userId: number ) {
         return await this._usersService.getUserById( userId );
+    }
+
+    @Put('/:userId')
+    async updateUserById( @Param('userId') userId, @Body() user: User){
+        return await this._usersService.updateUserById( userId, user );
     }
 }
